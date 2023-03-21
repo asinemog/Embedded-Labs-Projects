@@ -25,3 +25,7 @@ debounced
 
 • Arduino libraries are not allowed
 to be used
+
+![RDjkfCk](https://user-images.githubusercontent.com/63246095/226595861-a18bb641-5e55-426f-b943-6e143e3cf086.png)
+
+![c9pXLIC](https://user-images.githubusercontent.com/63246095/226595676-d2a62c87-f3ac-4f45-8167-6ba1fbf415cd.png)
