@@ -7,12 +7,33 @@
 
 #include <avr/io.h>
 
+#define F_CPU 16000000UL
+#define __DELAY_BACKWARD_COMPATIBLE__
+#include "util/delay.h"
+#include "bitFunctions.h"
+
+#define LEDPIN PINB5
+
+void blinkLed(int period){
+	
+		bitSet(PORTB, LEDPIN);
+		_delay_ms(period);
+		bitClear(PORTB, LEDPIN);
+		_delay_ms(period);
+	
+	
+}
 
 int main(void)
 {
-    /* Replace with your application code */
+    //testing header file
+	bitSet(DDRB, LEDPIN);
+	
+	
+	
     while (1) 
     {
+		blinkLed(2000);
     }
 }
 
