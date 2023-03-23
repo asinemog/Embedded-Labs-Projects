@@ -90,7 +90,7 @@ int main(void)
   92:	88 61       	ori	r24, 0x18	; 24
   94:	80 83       	st	Z, r24
 	
-	UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
+	UCSR0C |= (3<<UCSZ00);
   96:	e2 ec       	ldi	r30, 0xC2	; 194
   98:	f0 e0       	ldi	r31, 0x00	; 0
   9a:	80 81       	ld	r24, Z

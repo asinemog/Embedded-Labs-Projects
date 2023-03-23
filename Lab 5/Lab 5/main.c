@@ -21,7 +21,7 @@ int main(void)
 	
 	UCSR0B |= (1<<RXEN0) | (1<<TXEN0);
 	
-	UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
+	UCSR0C |= (3<<UCSZ00);
     
 	unsigned char tmp = 0;
 	while (1) 
