@@ -29,7 +29,7 @@ int main(void)
 		while(!(UCSR0A & (1<<RXC0)));
 		tmp = UDR0;
 		while(!(UCSR0A & (1<<UDRE0)));
-		UDR0 = tmp + 1;
+		UDR0 = tmp;
 	}
 }
 

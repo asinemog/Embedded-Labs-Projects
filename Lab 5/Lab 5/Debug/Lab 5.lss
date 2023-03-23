@@ -3,29 +3,29 @@ Lab 5.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  00000116  2**0
+  0 .data         00000000  00800100  00800100  00000112  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000000c2  00000000  00000000  00000054  2**1
+  1 .text         000000be  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  00000116  2**0
+  2 .comment      00000030  00000000  00000000  00000112  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000148  2**2
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000144  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000020  00000000  00000000  00000188  2**0
+  4 .debug_aranges 00000020  00000000  00000000  00000184  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000697  00000000  00000000  000001a8  2**0
+  5 .debug_info   00000697  00000000  00000000  000001a4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000607  00000000  00000000  0000083f  2**0
+  6 .debug_abbrev 00000607  00000000  00000000  0000083b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000207  00000000  00000000  00000e46  2**0
+  7 .debug_line   00000207  00000000  00000000  00000e42  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000024  00000000  00000000  00001050  2**2
+  8 .debug_frame  00000024  00000000  00000000  0000104c  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    0000034a  00000000  00000000  00001074  2**0
+  9 .debug_str    00000351  00000000  00000000  00001070  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00000013  00000000  00000000  000013be  2**0
+ 10 .debug_loc    00000013  00000000  00000000  000013c1  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000010  00000000  00000000  000013d1  2**0
+ 11 .debug_ranges 00000010  00000000  00000000  000013d4  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -66,7 +66,7 @@ Disassembly of section .text:
   70:	de bf       	out	0x3e, r29	; 62
   72:	cd bf       	out	0x3d, r28	; 61
   74:	0e 94 40 00 	call	0x80	; 0x80 <main>
-  78:	0c 94 5f 00 	jmp	0xbe	; 0xbe <_exit>
+  78:	0c 94 5d 00 	jmp	0xba	; 0xba <_exit>
 
 0000007c <__bad_interrupt>:
   7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -110,15 +110,13 @@ int main(void)
   ac:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
   b0:	85 ff       	sbrs	r24, 5
   b2:	fc cf       	rjmp	.-8      	; 0xac <main+0x2c>
-		UDR0 = tmp + 1;
-  b4:	81 e0       	ldi	r24, 0x01	; 1
-  b6:	89 0f       	add	r24, r25
-  b8:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
+		UDR0 = tmp;
+  b4:	90 93 c6 00 	sts	0x00C6, r25	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
 	}
-  bc:	f1 cf       	rjmp	.-30     	; 0xa0 <main+0x20>
+  b8:	f3 cf       	rjmp	.-26     	; 0xa0 <main+0x20>
 
-000000be <_exit>:
-  be:	f8 94       	cli
+000000ba <_exit>:
+  ba:	f8 94       	cli
 
-000000c0 <__stop_program>:
-  c0:	ff cf       	rjmp	.-2      	; 0xc0 <__stop_program>
+000000bc <__stop_program>:
+  bc:	ff cf       	rjmp	.-2      	; 0xbc <__stop_program>
