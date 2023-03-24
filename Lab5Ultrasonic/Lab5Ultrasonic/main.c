@@ -5,21 +5,26 @@
  * Author : asine
  */ 
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include "bitFunctions.h"
-
 #ifndef F_CPU
 #define F_CPU 16000000UL
-#endif 
+#endif
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include "util/delay.h"
+#include "bitFunctions.h"
+
+
 
 unsigned long numOV0;
 unsigned long numOV1;
 
 float ultraSonic(void);
-void delayUS(float);
-void transmitStringUSART(char* pdata, int len);
+void delayUS(float t);
+void transmitStringUSART(char* pdata);
 void recieveCharUSART(void);
+void transmitByteUSART(char c);
+void initUART(int ubbr);
 
 
 
@@ -37,24 +42,19 @@ ISR(TIMER1_OVF_vect){
 #define BAUD 9600
 #define MY_UBBR (F_CPU/16/BAUD - 1)
 
-void usartINIT(int ubbr){
-	UBRR0 = ubbr;
-	
-	UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
-	
-	
-}
+
 
 
 
 
 int main(void)
 {
-    bitSet(DDRB, pinTrigger);
+    initUART(MY_UBBR);
+	
 	bitSet(DDRB, pinTrigger);
 	
 	bitClear(DDRD, pinEcho);
-	bitSet(PORTD, pinEcho);
+	
 	
 	float range;
 	char rangeString[15];
@@ -97,7 +97,8 @@ float ultraSonic(void){
 	// to trigger pulses, set high for > 10us then set low
 	bitSet(PORTB, pinTrigger);
 	
-	//delayUS(11);
+	delayUS(11);
+	//_delay_us(11);
 	
 	bitClear(PORTB, pinTrigger);
 	
@@ -120,7 +121,7 @@ float ultraSonic(void){
 		x = 999;
 	}
 	else{
-		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0; // range in metres
+		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100; // range in centimetres
 	}
 	
 	//return registers back to whatever they were
@@ -131,18 +132,33 @@ float ultraSonic(void){
 	return(x);
 }
 
-void transmitStringUSART(char* pdata, int len){
-	int lencomp = 0;
+void initUART(int ubbr){
+	UBRR0 = ubbr;
+	
+	UCSR0B |= (1<<TXEN0);
+	
+	UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
+	
+	
+}
+
+void transmitStringUSART(char* pdata){
+	
 	
 	// loop while current char isnt stop char and end of string hasnt been reached
-	while(*pdata != '\0' && lencomp != len){
-		// wait until UDRE0 (UDR empty flag) is set
-		while(!(UCSR0A & (1<<UDRE0)));
-		UDR0 = *pdata;
-		// go to next memory address in the string (next char)
+	while(*pdata != '\0'){
+		transmitByteUSART(*pdata);
 		pdata++;
-		//increment lencomp until len0 = len (string length of input)
-		lencomp++;
-		
+	
 	}
+}
+
+void transmitByteUSART(char c){
+	while(!bitCheck(UCSR0A, UDRE0));
+	UDR0 = c;
+	
+}
+
+void delayUS(float t){
+	
 }
