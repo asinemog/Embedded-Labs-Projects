@@ -18,6 +18,7 @@
 
 unsigned long numOV0;
 unsigned long numOV1;
+unsigned long numOV = 0;
 
 float ultraSonic(void);
 void delayUS(float t);
@@ -160,5 +161,44 @@ void transmitByteUSART(char c){
 }
 
 void delayUS(float t){
+	cli();
+	char TCCR0A_old = TCCR0A;
+	char TCCR0B_old = TCCR0B;
+	char TIMSK0C_old = TIMSK0;
 	
+	TCCR0A = 0;
+	TCCR0B = 0;
+	TIMSK0 = 0;
+	
+	bitSet(TIMSK0, TOIE0);
+	
+	unsigned long tmp = 16.0/256. *t;
+	
+	numOV = tmp;
+	
+	TCNT0 = 0;
+	
+	sei();
+	
+	bitSet(TCCR0B, CS00);
+	
+	while(numOV);
+	
+	bitClear(TCCR0B, CS00);
+	
+	tmp = 16.0*t - tmp*256;
+	
+	if(tmp){
+		TCNT0 = 256 - tmp;
+		numOV = 1;
+		
+		bitSet(TCCR0B, CS00);
+		
+		while(numOV);
+	}
+	cli();
+	
+	TCCR0A = TCCR0A_old;
+	TCCR0B = TCCR0B_old;
+	TIMSK0 = TIMSK0C_old;
 }
