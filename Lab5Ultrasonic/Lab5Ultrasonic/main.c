@@ -5,32 +5,46 @@
  * Author : asine
  */ 
 
-#ifndef F_CPU
 #define F_CPU 16000000UL
-#endif
+
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "util/delay.h"
-#include "bitFunctions.h"
+#include <stdlib.h>
+
+#define bitSet(reg, ind) (reg |= 1 << ind)
+
+#define bitClear(reg, ind) (reg &= ~(1 << ind) )
+
+
+//e.g. PIND = 0b00010100,
+// reg = PIND = 0b00010100
+// ind = PIND4 = 4
+// PIND >> PIND4 & 1 = 0b00010100 >> 4 & 1 = 0b00000001 & 0b00000001 = 1/true
+//
+#define bitCheck(reg, ind) (reg >> ind & 1)
+
+
+#define bitToggle(reg, ind) (reg ^= 1 << ind)
+
 
 
 
 unsigned long numOV0;
 unsigned long numOV1;
-unsigned long numOV = 0;
+unsigned long numOV;
 
 float ultraSonic(void);
 void delayUS(float t);
 void transmitStringUSART(char* pdata);
 void recieveCharUSART(void);
 void transmitByteUSART(char c);
-void initUART(int ubbr);
+void initUSART(int ubbr);
 
 
 
 ISR(TIMER0_OVF_vect){
-	numOV0--;
+	numOV--;
 }
 
 ISR(TIMER1_OVF_vect){
@@ -45,29 +59,26 @@ ISR(TIMER1_OVF_vect){
 
 
 
-
-
-
 int main(void)
 {
-    initUART(MY_UBBR);
+    initUSART(MY_UBBR);
 	
 	bitSet(DDRB, pinTrigger);
 	
 	bitClear(DDRD, pinEcho);
-	
+	bitSet(PORTD, pinEcho);
 	
 	float range;
-	char rangeString[15];
+	char rangeStr[15];
 	
 	
     while (1) 
     {
 		range = ultraSonic();
-		dtostrf(range, 10, 3, rangeString);
-		rangeString[10] = '\0';
+		dtostrf(range, 10, 3, rangeStr);
+		rangeStr[10] = '\0';
 		
-		transmitStringUSART(rangeString);
+		transmitStringUSART(rangeStr);
 		transmitStringUSART("\r\n");
 		
 		
@@ -76,7 +87,7 @@ int main(void)
 
 float ultraSonic(void){
 	// save previous values of registers we are using
-	char timsk1 = TIMSK2;
+	char timsk1 = TIMSK1;
 	char tccr1b = TCCR1B;
 	char sreg = SREG;
 	
@@ -89,7 +100,7 @@ float ultraSonic(void){
 	bitSet(TIMSK1, TOIE1);
 	sei();
 	
-	char numOV1max = 80;
+	char numOV1max = 255;
 	numOV1 = numOV1max;
 	TCNT1 = 0;
 	
@@ -114,7 +125,7 @@ float ultraSonic(void){
 	TCCR1B = 0;
 	
 	//store num current clock ticks within the cycle
-	unsigned int tcnt1 = TCNT1;
+	 unsigned int tcnt1 = TCNT1;
 	
 	float x; //range
 	
@@ -122,7 +133,7 @@ float ultraSonic(void){
 		x = 999;
 	}
 	else{
-		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100; // range in centimetres
+		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100.0; // range in centimetres
 	}
 	
 	//return registers back to whatever they were
@@ -133,30 +144,30 @@ float ultraSonic(void){
 	return(x);
 }
 
-void initUART(int ubbr){
+void initUSART(int ubbr){
 	UBRR0 = ubbr;
 	
-	UCSR0B |= (1<<TXEN0);
+	UCSR0B |= (1<<TXEN0) ;
 	
 	UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
 	
 	
 }
 
-void transmitStringUSART(char* pdata){
+void transmitStringUSART(char* x){
 	
 	
 	// loop while current char isnt stop char and end of string hasnt been reached
-	while(*pdata != '\0'){
-		transmitByteUSART(*pdata);
-		pdata++;
+	while(*x != '\0'){
+		transmitByteUSART(*x);
+		x++;
 	
 	}
 }
 
-void transmitByteUSART(char c){
+void transmitByteUSART(char x){
 	while(!bitCheck(UCSR0A, UDRE0));
-	UDR0 = c;
+	UDR0 = x;
 	
 }
 

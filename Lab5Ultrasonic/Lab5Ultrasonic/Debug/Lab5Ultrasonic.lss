@@ -15,19 +15,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   5 .debug_aranges 00000058  00000000  00000000  00000f68  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   0000095b  00000000  00000000  00000fc0  2**0
+  6 .debug_info   00000933  00000000  00000000  00000fc0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000775  00000000  00000000  0000191b  2**0
+  7 .debug_abbrev 00000752  00000000  00000000  000018f3  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000434  00000000  00000000  00002090  2**0
+  8 .debug_line   00000446  00000000  00000000  00002045  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000160  00000000  00000000  000024c4  2**2
+  9 .debug_frame  00000160  00000000  00000000  0000248c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000044a  00000000  00000000  00002624  2**0
+ 10 .debug_str    00000442  00000000  00000000  000025ec  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    0000044a  00000000  00000000  00002a6e  2**0
+ 11 .debug_loc    0000044a  00000000  00000000  00002a2e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000048  00000000  00000000  00002eb8  2**0
+ 12 .debug_ranges 00000048  00000000  00000000  00002e78  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -221,7 +221,7 @@ Disassembly of section .text:
  18e:	a0 31       	cpi	r26, 0x10	; 16
  190:	b2 07       	cpc	r27, r18
  192:	e1 f7       	brne	.-8      	; 0x18c <.do_clear_bss_loop>
- 194:	0e 94 74 02 	call	0x4e8	; 0x4e8 <main>
+ 194:	0e 94 73 02 	call	0x4e6	; 0x4e6 <main>
  198:	0c 94 2e 07 	jmp	0xe5c	; 0xe5c <_exit>
 
 0000019c <__bad_interrupt>:
@@ -229,7 +229,7 @@ Disassembly of section .text:
 
 000001a0 <__vector_16>:
 void transmitByteUSART(char c);
-void initUART(int ubbr);
+void initUSART(int ubbr);
 
 
 
@@ -243,18 +243,18 @@ ISR(TIMER0_OVF_vect){
  1ac:	9f 93       	push	r25
  1ae:	af 93       	push	r26
  1b0:	bf 93       	push	r27
-	numOV0--;
- 1b2:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <numOV0>
- 1b6:	90 91 09 01 	lds	r25, 0x0109	; 0x800109 <numOV0+0x1>
- 1ba:	a0 91 0a 01 	lds	r26, 0x010A	; 0x80010a <numOV0+0x2>
- 1be:	b0 91 0b 01 	lds	r27, 0x010B	; 0x80010b <numOV0+0x3>
+	numOV--;
+ 1b2:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <numOV>
+ 1b6:	90 91 09 01 	lds	r25, 0x0109	; 0x800109 <numOV+0x1>
+ 1ba:	a0 91 0a 01 	lds	r26, 0x010A	; 0x80010a <numOV+0x2>
+ 1be:	b0 91 0b 01 	lds	r27, 0x010B	; 0x80010b <numOV+0x3>
  1c2:	01 97       	sbiw	r24, 0x01	; 1
  1c4:	a1 09       	sbc	r26, r1
  1c6:	b1 09       	sbc	r27, r1
- 1c8:	80 93 08 01 	sts	0x0108, r24	; 0x800108 <numOV0>
- 1cc:	90 93 09 01 	sts	0x0109, r25	; 0x800109 <numOV0+0x1>
- 1d0:	a0 93 0a 01 	sts	0x010A, r26	; 0x80010a <numOV0+0x2>
- 1d4:	b0 93 0b 01 	sts	0x010B, r27	; 0x80010b <numOV0+0x3>
+ 1c8:	80 93 08 01 	sts	0x0108, r24	; 0x800108 <numOV>
+ 1cc:	90 93 09 01 	sts	0x0109, r25	; 0x800109 <numOV+0x1>
+ 1d0:	a0 93 0a 01 	sts	0x010A, r26	; 0x80010a <numOV+0x2>
+ 1d4:	b0 93 0b 01 	sts	0x010B, r27	; 0x80010b <numOV+0x3>
 }
  1d8:	bf 91       	pop	r27
  1da:	af 91       	pop	r26
@@ -301,17 +301,17 @@ ISR(TIMER1_OVF_vect){
  230:	1f 90       	pop	r1
  232:	18 95       	reti
 
-00000234 <initUART>:
+00000234 <initUSART>:
 	
 	return(x);
 }
 
-void initUART(int ubbr){
+void initUSART(int ubbr){
 	UBRR0 = ubbr;
  234:	90 93 c5 00 	sts	0x00C5, r25	; 0x8000c5 <__TEXT_REGION_LENGTH__+0x7f80c5>
  238:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__TEXT_REGION_LENGTH__+0x7f80c4>
 	
-	UCSR0B |= (1<<TXEN0);
+	UCSR0B |= (1<<TXEN0) ;
  23c:	e1 ec       	ldi	r30, 0xC1	; 193
  23e:	f0 e0       	ldi	r31, 0x00	; 0
  240:	80 81       	ld	r24, Z
@@ -331,12 +331,12 @@ void initUART(int ubbr){
 	}
 }
 
-void transmitByteUSART(char c){
+void transmitByteUSART(char x){
 	while(!bitCheck(UCSR0A, UDRE0));
  252:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
  256:	95 ff       	sbrs	r25, 5
  258:	fc cf       	rjmp	.-8      	; 0x252 <transmitByteUSART>
-	UDR0 = c;
+	UDR0 = x;
  25a:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
  25e:	08 95       	ret
 
@@ -346,30 +346,30 @@ void transmitByteUSART(char c){
 	
 }
 
-void transmitStringUSART(char* pdata){
+void transmitStringUSART(char* x){
  260:	cf 93       	push	r28
  262:	df 93       	push	r29
  264:	ec 01       	movw	r28, r24
 	
 	
 	// loop while current char isnt stop char and end of string hasnt been reached
-	while(*pdata != '\0'){
+	while(*x != '\0'){
  266:	03 c0       	rjmp	.+6      	; 0x26e <transmitStringUSART+0xe>
-		transmitByteUSART(*pdata);
+		transmitByteUSART(*x);
  268:	0e 94 29 01 	call	0x252	; 0x252 <transmitByteUSART>
-		pdata++;
+		x++;
  26c:	21 96       	adiw	r28, 0x01	; 1
 
-void transmitStringUSART(char* pdata){
+void transmitStringUSART(char* x){
 	
 	
 	// loop while current char isnt stop char and end of string hasnt been reached
-	while(*pdata != '\0'){
+	while(*x != '\0'){
  26e:	88 81       	ld	r24, Y
  270:	81 11       	cpse	r24, r1
  272:	fa cf       	rjmp	.-12     	; 0x268 <transmitStringUSART+0x8>
-		transmitByteUSART(*pdata);
-		pdata++;
+		transmitByteUSART(*x);
+		x++;
 	
 	}
 }
@@ -379,7 +379,7 @@ void transmitStringUSART(char* pdata){
 
 0000027a <delayUS>:
 	while(!bitCheck(UCSR0A, UDRE0));
-	UDR0 = c;
+	UDR0 = x;
 	
 }
 
@@ -433,10 +433,10 @@ void delayUS(float t){
  2c2:	7c 01       	movw	r14, r24
 	
 	numOV = tmp;
- 2c4:	60 93 04 01 	sts	0x0104, r22	; 0x800104 <__data_end>
- 2c8:	70 93 05 01 	sts	0x0105, r23	; 0x800105 <__data_end+0x1>
- 2cc:	80 93 06 01 	sts	0x0106, r24	; 0x800106 <__data_end+0x2>
- 2d0:	90 93 07 01 	sts	0x0107, r25	; 0x800107 <__data_end+0x3>
+ 2c4:	60 93 08 01 	sts	0x0108, r22	; 0x800108 <numOV>
+ 2c8:	70 93 09 01 	sts	0x0109, r23	; 0x800109 <numOV+0x1>
+ 2cc:	80 93 0a 01 	sts	0x010A, r24	; 0x80010a <numOV+0x2>
+ 2d0:	90 93 0b 01 	sts	0x010B, r25	; 0x80010b <numOV+0x3>
 	
 	TCNT0 = 0;
  2d4:	16 bc       	out	0x26, r1	; 38
@@ -450,10 +450,10 @@ void delayUS(float t){
  2dc:	85 bd       	out	0x25, r24	; 37
 	
 	while(numOV);
- 2de:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <__data_end>
- 2e2:	90 91 05 01 	lds	r25, 0x0105	; 0x800105 <__data_end+0x1>
- 2e6:	a0 91 06 01 	lds	r26, 0x0106	; 0x800106 <__data_end+0x2>
- 2ea:	b0 91 07 01 	lds	r27, 0x0107	; 0x800107 <__data_end+0x3>
+ 2de:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <numOV>
+ 2e2:	90 91 09 01 	lds	r25, 0x0109	; 0x800109 <numOV+0x1>
+ 2e6:	a0 91 0a 01 	lds	r26, 0x010A	; 0x80010a <numOV+0x2>
+ 2ea:	b0 91 0b 01 	lds	r27, 0x010B	; 0x80010b <numOV+0x3>
  2ee:	89 2b       	or	r24, r25
  2f0:	8a 2b       	or	r24, r26
  2f2:	8b 2b       	or	r24, r27
@@ -500,10 +500,10 @@ void delayUS(float t){
  33c:	90 e0       	ldi	r25, 0x00	; 0
  33e:	a0 e0       	ldi	r26, 0x00	; 0
  340:	b0 e0       	ldi	r27, 0x00	; 0
- 342:	80 93 04 01 	sts	0x0104, r24	; 0x800104 <__data_end>
- 346:	90 93 05 01 	sts	0x0105, r25	; 0x800105 <__data_end+0x1>
- 34a:	a0 93 06 01 	sts	0x0106, r26	; 0x800106 <__data_end+0x2>
- 34e:	b0 93 07 01 	sts	0x0107, r27	; 0x800107 <__data_end+0x3>
+ 342:	80 93 08 01 	sts	0x0108, r24	; 0x800108 <numOV>
+ 346:	90 93 09 01 	sts	0x0109, r25	; 0x800109 <numOV+0x1>
+ 34a:	a0 93 0a 01 	sts	0x010A, r26	; 0x80010a <numOV+0x2>
+ 34e:	b0 93 0b 01 	sts	0x010B, r27	; 0x80010b <numOV+0x3>
 		
 		bitSet(TCCR0B, CS00);
  352:	85 b5       	in	r24, 0x25	; 37
@@ -511,10 +511,10 @@ void delayUS(float t){
  356:	85 bd       	out	0x25, r24	; 37
 		
 		while(numOV);
- 358:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <__data_end>
- 35c:	90 91 05 01 	lds	r25, 0x0105	; 0x800105 <__data_end+0x1>
- 360:	a0 91 06 01 	lds	r26, 0x0106	; 0x800106 <__data_end+0x2>
- 364:	b0 91 07 01 	lds	r27, 0x0107	; 0x800107 <__data_end+0x3>
+ 358:	80 91 08 01 	lds	r24, 0x0108	; 0x800108 <numOV>
+ 35c:	90 91 09 01 	lds	r25, 0x0109	; 0x800109 <numOV+0x1>
+ 360:	a0 91 0a 01 	lds	r26, 0x010A	; 0x80010a <numOV+0x2>
+ 364:	b0 91 0b 01 	lds	r27, 0x010B	; 0x80010b <numOV+0x3>
  368:	89 2b       	or	r24, r25
  36a:	8a 2b       	or	r24, r26
  36c:	8b 2b       	or	r24, r27
@@ -561,259 +561,261 @@ float ultraSonic(void){
  3a4:	cf 93       	push	r28
  3a6:	df 93       	push	r29
 	// save previous values of registers we are using
-	char timsk1 = TIMSK2;
- 3a8:	10 91 70 00 	lds	r17, 0x0070	; 0x800070 <__TEXT_REGION_LENGTH__+0x7f8070>
+	char timsk1 = TIMSK1;
+ 3a8:	ef e6       	ldi	r30, 0x6F	; 111
+ 3aa:	f0 e0       	ldi	r31, 0x00	; 0
+ 3ac:	10 81       	ld	r17, Z
 	char tccr1b = TCCR1B;
- 3ac:	e1 e8       	ldi	r30, 0x81	; 129
- 3ae:	f0 e0       	ldi	r31, 0x00	; 0
- 3b0:	c0 81       	ld	r28, Z
+ 3ae:	a1 e8       	ldi	r26, 0x81	; 129
+ 3b0:	b0 e0       	ldi	r27, 0x00	; 0
+ 3b2:	cc 91       	ld	r28, X
 	char sreg = SREG;
- 3b2:	df b7       	in	r29, 0x3f	; 63
+ 3b4:	df b7       	in	r29, 0x3f	; 63
 	
 	// reset registers
 	TCCR1B = 0;
- 3b4:	10 82       	st	Z, r1
+ 3b6:	1c 92       	st	X, r1
 	TIMSK1 = 0;
- 3b6:	ef e6       	ldi	r30, 0x6F	; 111
- 3b8:	f0 e0       	ldi	r31, 0x00	; 0
- 3ba:	10 82       	st	Z, r1
+ 3b8:	10 82       	st	Z, r1
 	SREG = 0;
- 3bc:	1f be       	out	0x3f, r1	; 63
+ 3ba:	1f be       	out	0x3f, r1	; 63
 	
 	// enabled timer overflow interrupt
 	bitSet(TIMSK1, TOIE1);
- 3be:	80 81       	ld	r24, Z
- 3c0:	81 60       	ori	r24, 0x01	; 1
- 3c2:	80 83       	st	Z, r24
+ 3bc:	80 81       	ld	r24, Z
+ 3be:	81 60       	ori	r24, 0x01	; 1
+ 3c0:	80 83       	st	Z, r24
 	sei();
- 3c4:	78 94       	sei
+ 3c2:	78 94       	sei
 	
-	char numOV1max = 80;
+	char numOV1max = 255;
 	numOV1 = numOV1max;
- 3c6:	80 e5       	ldi	r24, 0x50	; 80
- 3c8:	90 e0       	ldi	r25, 0x00	; 0
- 3ca:	a0 e0       	ldi	r26, 0x00	; 0
- 3cc:	b0 e0       	ldi	r27, 0x00	; 0
- 3ce:	80 93 0c 01 	sts	0x010C, r24	; 0x80010c <numOV1>
- 3d2:	90 93 0d 01 	sts	0x010D, r25	; 0x80010d <numOV1+0x1>
- 3d6:	a0 93 0e 01 	sts	0x010E, r26	; 0x80010e <numOV1+0x2>
- 3da:	b0 93 0f 01 	sts	0x010F, r27	; 0x80010f <numOV1+0x3>
+ 3c4:	8f ef       	ldi	r24, 0xFF	; 255
+ 3c6:	90 e0       	ldi	r25, 0x00	; 0
+ 3c8:	a0 e0       	ldi	r26, 0x00	; 0
+ 3ca:	b0 e0       	ldi	r27, 0x00	; 0
+ 3cc:	80 93 0c 01 	sts	0x010C, r24	; 0x80010c <numOV1>
+ 3d0:	90 93 0d 01 	sts	0x010D, r25	; 0x80010d <numOV1+0x1>
+ 3d4:	a0 93 0e 01 	sts	0x010E, r26	; 0x80010e <numOV1+0x2>
+ 3d8:	b0 93 0f 01 	sts	0x010F, r27	; 0x80010f <numOV1+0x3>
 	TCNT1 = 0;
- 3de:	10 92 85 00 	sts	0x0085, r1	; 0x800085 <__TEXT_REGION_LENGTH__+0x7f8085>
- 3e2:	10 92 84 00 	sts	0x0084, r1	; 0x800084 <__TEXT_REGION_LENGTH__+0x7f8084>
+ 3dc:	10 92 85 00 	sts	0x0085, r1	; 0x800085 <__TEXT_REGION_LENGTH__+0x7f8085>
+ 3e0:	10 92 84 00 	sts	0x0084, r1	; 0x800084 <__TEXT_REGION_LENGTH__+0x7f8084>
 	
 	bitClear(PORTB, pinTrigger);
- 3e6:	85 b1       	in	r24, 0x05	; 5
- 3e8:	8f 7e       	andi	r24, 0xEF	; 239
- 3ea:	85 b9       	out	0x05, r24	; 5
+ 3e4:	85 b1       	in	r24, 0x05	; 5
+ 3e6:	8f 7e       	andi	r24, 0xEF	; 239
+ 3e8:	85 b9       	out	0x05, r24	; 5
 	
 	// to trigger pulses, set high for > 10us then set low
 	bitSet(PORTB, pinTrigger);
- 3ec:	85 b1       	in	r24, 0x05	; 5
- 3ee:	80 61       	ori	r24, 0x10	; 16
- 3f0:	85 b9       	out	0x05, r24	; 5
+ 3ea:	85 b1       	in	r24, 0x05	; 5
+ 3ec:	80 61       	ori	r24, 0x10	; 16
+ 3ee:	85 b9       	out	0x05, r24	; 5
 	
 	delayUS(11);
- 3f2:	60 e0       	ldi	r22, 0x00	; 0
- 3f4:	70 e0       	ldi	r23, 0x00	; 0
- 3f6:	80 e3       	ldi	r24, 0x30	; 48
- 3f8:	91 e4       	ldi	r25, 0x41	; 65
- 3fa:	0e 94 3d 01 	call	0x27a	; 0x27a <delayUS>
+ 3f0:	60 e0       	ldi	r22, 0x00	; 0
+ 3f2:	70 e0       	ldi	r23, 0x00	; 0
+ 3f4:	80 e3       	ldi	r24, 0x30	; 48
+ 3f6:	91 e4       	ldi	r25, 0x41	; 65
+ 3f8:	0e 94 3d 01 	call	0x27a	; 0x27a <delayUS>
 	//_delay_us(11);
 	
 	bitClear(PORTB, pinTrigger);
- 3fe:	85 b1       	in	r24, 0x05	; 5
- 400:	8f 7e       	andi	r24, 0xEF	; 239
- 402:	85 b9       	out	0x05, r24	; 5
+ 3fc:	85 b1       	in	r24, 0x05	; 5
+ 3fe:	8f 7e       	andi	r24, 0xEF	; 239
+ 400:	85 b9       	out	0x05, r24	; 5
 	
 	//wait for pinEcho to be high before counting
 	while(!bitCheck(PIND, pinEcho));
- 404:	4c 9b       	sbis	0x09, 4	; 9
- 406:	fe cf       	rjmp	.-4      	; 0x404 <__EEPROM_REGION_LENGTH__+0x4>
+ 402:	4c 9b       	sbis	0x09, 4	; 9
+ 404:	fe cf       	rjmp	.-4      	; 0x402 <__EEPROM_REGION_LENGTH__+0x2>
 	//when pinEcho goes high, start timer to measure how many ticks it is high
 	TCCR1B = 1;
- 408:	81 e0       	ldi	r24, 0x01	; 1
- 40a:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__TEXT_REGION_LENGTH__+0x7f8081>
+ 406:	81 e0       	ldi	r24, 0x01	; 1
+ 408:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__TEXT_REGION_LENGTH__+0x7f8081>
 	
 	//wait while pinEcho is high
 	while(numOV1 && bitCheck(PIND, pinEcho));
- 40e:	80 91 0c 01 	lds	r24, 0x010C	; 0x80010c <numOV1>
- 412:	90 91 0d 01 	lds	r25, 0x010D	; 0x80010d <numOV1+0x1>
- 416:	a0 91 0e 01 	lds	r26, 0x010E	; 0x80010e <numOV1+0x2>
- 41a:	b0 91 0f 01 	lds	r27, 0x010F	; 0x80010f <numOV1+0x3>
- 41e:	89 2b       	or	r24, r25
- 420:	8a 2b       	or	r24, r26
- 422:	8b 2b       	or	r24, r27
- 424:	11 f0       	breq	.+4      	; 0x42a <__EEPROM_REGION_LENGTH__+0x2a>
- 426:	4c 99       	sbic	0x09, 4	; 9
- 428:	f2 cf       	rjmp	.-28     	; 0x40e <__EEPROM_REGION_LENGTH__+0xe>
+ 40c:	80 91 0c 01 	lds	r24, 0x010C	; 0x80010c <numOV1>
+ 410:	90 91 0d 01 	lds	r25, 0x010D	; 0x80010d <numOV1+0x1>
+ 414:	a0 91 0e 01 	lds	r26, 0x010E	; 0x80010e <numOV1+0x2>
+ 418:	b0 91 0f 01 	lds	r27, 0x010F	; 0x80010f <numOV1+0x3>
+ 41c:	89 2b       	or	r24, r25
+ 41e:	8a 2b       	or	r24, r26
+ 420:	8b 2b       	or	r24, r27
+ 422:	11 f0       	breq	.+4      	; 0x428 <__EEPROM_REGION_LENGTH__+0x28>
+ 424:	4c 99       	sbic	0x09, 4	; 9
+ 426:	f2 cf       	rjmp	.-28     	; 0x40c <__EEPROM_REGION_LENGTH__+0xc>
 	//stop timer when pinEcho goes low
 	TCCR1B = 0;
- 42a:	10 92 81 00 	sts	0x0081, r1	; 0x800081 <__TEXT_REGION_LENGTH__+0x7f8081>
+ 428:	10 92 81 00 	sts	0x0081, r1	; 0x800081 <__TEXT_REGION_LENGTH__+0x7f8081>
 	
 	//store num current clock ticks within the cycle
-	unsigned int tcnt1 = TCNT1;
- 42e:	e0 90 84 00 	lds	r14, 0x0084	; 0x800084 <__TEXT_REGION_LENGTH__+0x7f8084>
- 432:	f0 90 85 00 	lds	r15, 0x0085	; 0x800085 <__TEXT_REGION_LENGTH__+0x7f8085>
+	 unsigned int tcnt1 = TCNT1;
+ 42c:	e0 90 84 00 	lds	r14, 0x0084	; 0x800084 <__TEXT_REGION_LENGTH__+0x7f8084>
+ 430:	f0 90 85 00 	lds	r15, 0x0085	; 0x800085 <__TEXT_REGION_LENGTH__+0x7f8085>
 	
 	float x; //range
 	
 	if (numOV1 == 0){
- 436:	80 91 0c 01 	lds	r24, 0x010C	; 0x80010c <numOV1>
- 43a:	90 91 0d 01 	lds	r25, 0x010D	; 0x80010d <numOV1+0x1>
- 43e:	a0 91 0e 01 	lds	r26, 0x010E	; 0x80010e <numOV1+0x2>
- 442:	b0 91 0f 01 	lds	r27, 0x010F	; 0x80010f <numOV1+0x3>
- 446:	00 97       	sbiw	r24, 0x00	; 0
- 448:	a1 05       	cpc	r26, r1
- 44a:	b1 05       	cpc	r27, r1
- 44c:	c1 f1       	breq	.+112    	; 0x4be <__EEPROM_REGION_LENGTH__+0xbe>
+ 434:	80 91 0c 01 	lds	r24, 0x010C	; 0x80010c <numOV1>
+ 438:	90 91 0d 01 	lds	r25, 0x010D	; 0x80010d <numOV1+0x1>
+ 43c:	a0 91 0e 01 	lds	r26, 0x010E	; 0x80010e <numOV1+0x2>
+ 440:	b0 91 0f 01 	lds	r27, 0x010F	; 0x80010f <numOV1+0x3>
+ 444:	00 97       	sbiw	r24, 0x00	; 0
+ 446:	a1 05       	cpc	r26, r1
+ 448:	b1 05       	cpc	r27, r1
+ 44a:	c1 f1       	breq	.+112    	; 0x4bc <__EEPROM_REGION_LENGTH__+0xbc>
 		x = 999;
 	}
 	else{
-		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100; // range in centimetres
- 44e:	40 e5       	ldi	r20, 0x50	; 80
- 450:	50 e0       	ldi	r21, 0x00	; 0
- 452:	60 e0       	ldi	r22, 0x00	; 0
- 454:	70 e0       	ldi	r23, 0x00	; 0
- 456:	5a 01       	movw	r10, r20
- 458:	6b 01       	movw	r12, r22
- 45a:	a8 1a       	sub	r10, r24
- 45c:	b9 0a       	sbc	r11, r25
- 45e:	ca 0a       	sbc	r12, r26
- 460:	db 0a       	sbc	r13, r27
- 462:	c6 01       	movw	r24, r12
- 464:	b5 01       	movw	r22, r10
- 466:	0e 94 aa 03 	call	0x754	; 0x754 <__floatunsisf>
- 46a:	20 e0       	ldi	r18, 0x00	; 0
- 46c:	30 e0       	ldi	r19, 0x00	; 0
- 46e:	40 e8       	ldi	r20, 0x80	; 128
- 470:	57 e4       	ldi	r21, 0x47	; 71
- 472:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
- 476:	4b 01       	movw	r8, r22
- 478:	5c 01       	movw	r10, r24
- 47a:	b7 01       	movw	r22, r14
- 47c:	80 e0       	ldi	r24, 0x00	; 0
- 47e:	90 e0       	ldi	r25, 0x00	; 0
- 480:	0e 94 aa 03 	call	0x754	; 0x754 <__floatunsisf>
- 484:	a5 01       	movw	r20, r10
- 486:	94 01       	movw	r18, r8
- 488:	0e 94 9d 02 	call	0x53a	; 0x53a <__addsf3>
- 48c:	20 e0       	ldi	r18, 0x00	; 0
- 48e:	34 e2       	ldi	r19, 0x24	; 36
- 490:	44 e7       	ldi	r20, 0x74	; 116
- 492:	5b e4       	ldi	r21, 0x4B	; 75
- 494:	0e 94 09 03 	call	0x612	; 0x612 <__divsf3>
- 498:	20 e0       	ldi	r18, 0x00	; 0
- 49a:	30 e8       	ldi	r19, 0x80	; 128
- 49c:	4b ea       	ldi	r20, 0xAB	; 171
- 49e:	53 e4       	ldi	r21, 0x43	; 67
- 4a0:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
- 4a4:	20 e0       	ldi	r18, 0x00	; 0
- 4a6:	30 e0       	ldi	r19, 0x00	; 0
- 4a8:	40 e0       	ldi	r20, 0x00	; 0
- 4aa:	5f e3       	ldi	r21, 0x3F	; 63
- 4ac:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
- 4b0:	20 e0       	ldi	r18, 0x00	; 0
- 4b2:	30 e0       	ldi	r19, 0x00	; 0
- 4b4:	48 ec       	ldi	r20, 0xC8	; 200
- 4b6:	52 e4       	ldi	r21, 0x42	; 66
- 4b8:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
- 4bc:	04 c0       	rjmp	.+8      	; 0x4c6 <__EEPROM_REGION_LENGTH__+0xc6>
-	unsigned int tcnt1 = TCNT1;
+		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100.0; // range in centimetres
+ 44c:	4f ef       	ldi	r20, 0xFF	; 255
+ 44e:	50 e0       	ldi	r21, 0x00	; 0
+ 450:	60 e0       	ldi	r22, 0x00	; 0
+ 452:	70 e0       	ldi	r23, 0x00	; 0
+ 454:	5a 01       	movw	r10, r20
+ 456:	6b 01       	movw	r12, r22
+ 458:	a8 1a       	sub	r10, r24
+ 45a:	b9 0a       	sbc	r11, r25
+ 45c:	ca 0a       	sbc	r12, r26
+ 45e:	db 0a       	sbc	r13, r27
+ 460:	c6 01       	movw	r24, r12
+ 462:	b5 01       	movw	r22, r10
+ 464:	0e 94 aa 03 	call	0x754	; 0x754 <__floatunsisf>
+ 468:	20 e0       	ldi	r18, 0x00	; 0
+ 46a:	30 e0       	ldi	r19, 0x00	; 0
+ 46c:	40 e8       	ldi	r20, 0x80	; 128
+ 46e:	57 e4       	ldi	r21, 0x47	; 71
+ 470:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
+ 474:	4b 01       	movw	r8, r22
+ 476:	5c 01       	movw	r10, r24
+ 478:	b7 01       	movw	r22, r14
+ 47a:	80 e0       	ldi	r24, 0x00	; 0
+ 47c:	90 e0       	ldi	r25, 0x00	; 0
+ 47e:	0e 94 aa 03 	call	0x754	; 0x754 <__floatunsisf>
+ 482:	a5 01       	movw	r20, r10
+ 484:	94 01       	movw	r18, r8
+ 486:	0e 94 9d 02 	call	0x53a	; 0x53a <__addsf3>
+ 48a:	20 e0       	ldi	r18, 0x00	; 0
+ 48c:	34 e2       	ldi	r19, 0x24	; 36
+ 48e:	44 e7       	ldi	r20, 0x74	; 116
+ 490:	5b e4       	ldi	r21, 0x4B	; 75
+ 492:	0e 94 09 03 	call	0x612	; 0x612 <__divsf3>
+ 496:	20 e0       	ldi	r18, 0x00	; 0
+ 498:	30 e8       	ldi	r19, 0x80	; 128
+ 49a:	4b ea       	ldi	r20, 0xAB	; 171
+ 49c:	53 e4       	ldi	r21, 0x43	; 67
+ 49e:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
+ 4a2:	20 e0       	ldi	r18, 0x00	; 0
+ 4a4:	30 e0       	ldi	r19, 0x00	; 0
+ 4a6:	40 e0       	ldi	r20, 0x00	; 0
+ 4a8:	5f e3       	ldi	r21, 0x3F	; 63
+ 4aa:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
+ 4ae:	20 e0       	ldi	r18, 0x00	; 0
+ 4b0:	30 e0       	ldi	r19, 0x00	; 0
+ 4b2:	48 ec       	ldi	r20, 0xC8	; 200
+ 4b4:	52 e4       	ldi	r21, 0x42	; 66
+ 4b6:	0e 94 38 04 	call	0x870	; 0x870 <__mulsf3>
+ 4ba:	04 c0       	rjmp	.+8      	; 0x4c4 <__EEPROM_REGION_LENGTH__+0xc4>
+	 unsigned int tcnt1 = TCNT1;
 	
 	float x; //range
 	
 	if (numOV1 == 0){
 		x = 999;
- 4be:	60 e0       	ldi	r22, 0x00	; 0
- 4c0:	70 ec       	ldi	r23, 0xC0	; 192
- 4c2:	89 e7       	ldi	r24, 0x79	; 121
- 4c4:	94 e4       	ldi	r25, 0x44	; 68
+ 4bc:	60 e0       	ldi	r22, 0x00	; 0
+ 4be:	70 ec       	ldi	r23, 0xC0	; 192
+ 4c0:	89 e7       	ldi	r24, 0x79	; 121
+ 4c2:	94 e4       	ldi	r25, 0x44	; 68
 	else{
-		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100; // range in centimetres
+		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100.0; // range in centimetres
 	}
 	
 	//return registers back to whatever they were
 	TIMSK1 = timsk1;
- 4c6:	10 93 6f 00 	sts	0x006F, r17	; 0x80006f <__TEXT_REGION_LENGTH__+0x7f806f>
+ 4c4:	10 93 6f 00 	sts	0x006F, r17	; 0x80006f <__TEXT_REGION_LENGTH__+0x7f806f>
 	SREG = sreg;
- 4ca:	df bf       	out	0x3f, r29	; 63
+ 4c8:	df bf       	out	0x3f, r29	; 63
 	TCCR1B = tccr1b;
- 4cc:	c0 93 81 00 	sts	0x0081, r28	; 0x800081 <__TEXT_REGION_LENGTH__+0x7f8081>
+ 4ca:	c0 93 81 00 	sts	0x0081, r28	; 0x800081 <__TEXT_REGION_LENGTH__+0x7f8081>
 	
 	return(x);
 }
- 4d0:	df 91       	pop	r29
- 4d2:	cf 91       	pop	r28
- 4d4:	1f 91       	pop	r17
- 4d6:	ff 90       	pop	r15
- 4d8:	ef 90       	pop	r14
- 4da:	df 90       	pop	r13
- 4dc:	cf 90       	pop	r12
- 4de:	bf 90       	pop	r11
- 4e0:	af 90       	pop	r10
- 4e2:	9f 90       	pop	r9
- 4e4:	8f 90       	pop	r8
- 4e6:	08 95       	ret
+ 4ce:	df 91       	pop	r29
+ 4d0:	cf 91       	pop	r28
+ 4d2:	1f 91       	pop	r17
+ 4d4:	ff 90       	pop	r15
+ 4d6:	ef 90       	pop	r14
+ 4d8:	df 90       	pop	r13
+ 4da:	cf 90       	pop	r12
+ 4dc:	bf 90       	pop	r11
+ 4de:	af 90       	pop	r10
+ 4e0:	9f 90       	pop	r9
+ 4e2:	8f 90       	pop	r8
+ 4e4:	08 95       	ret
 
-000004e8 <main>:
-
+000004e6 <main>:
+#define MY_UBBR (F_CPU/16/BAUD - 1)
 
 
 
 int main(void)
 {
- 4e8:	cf 93       	push	r28
- 4ea:	df 93       	push	r29
- 4ec:	cd b7       	in	r28, 0x3d	; 61
- 4ee:	de b7       	in	r29, 0x3e	; 62
- 4f0:	2f 97       	sbiw	r28, 0x0f	; 15
- 4f2:	0f b6       	in	r0, 0x3f	; 63
- 4f4:	f8 94       	cli
- 4f6:	de bf       	out	0x3e, r29	; 62
- 4f8:	0f be       	out	0x3f, r0	; 63
- 4fa:	cd bf       	out	0x3d, r28	; 61
-    initUART(MY_UBBR);
- 4fc:	87 e6       	ldi	r24, 0x67	; 103
- 4fe:	90 e0       	ldi	r25, 0x00	; 0
- 500:	0e 94 1a 01 	call	0x234	; 0x234 <initUART>
+ 4e6:	cf 93       	push	r28
+ 4e8:	df 93       	push	r29
+ 4ea:	cd b7       	in	r28, 0x3d	; 61
+ 4ec:	de b7       	in	r29, 0x3e	; 62
+ 4ee:	2f 97       	sbiw	r28, 0x0f	; 15
+ 4f0:	0f b6       	in	r0, 0x3f	; 63
+ 4f2:	f8 94       	cli
+ 4f4:	de bf       	out	0x3e, r29	; 62
+ 4f6:	0f be       	out	0x3f, r0	; 63
+ 4f8:	cd bf       	out	0x3d, r28	; 61
+    initUSART(MY_UBBR);
+ 4fa:	87 e6       	ldi	r24, 0x67	; 103
+ 4fc:	90 e0       	ldi	r25, 0x00	; 0
+ 4fe:	0e 94 1a 01 	call	0x234	; 0x234 <initUSART>
 	
 	bitSet(DDRB, pinTrigger);
- 504:	84 b1       	in	r24, 0x04	; 4
- 506:	80 61       	ori	r24, 0x10	; 16
- 508:	84 b9       	out	0x04, r24	; 4
+ 502:	84 b1       	in	r24, 0x04	; 4
+ 504:	80 61       	ori	r24, 0x10	; 16
+ 506:	84 b9       	out	0x04, r24	; 4
 	
 	bitClear(DDRD, pinEcho);
- 50a:	8a b1       	in	r24, 0x0a	; 10
- 50c:	8f 7e       	andi	r24, 0xEF	; 239
- 50e:	8a b9       	out	0x0a, r24	; 10
-	char rangeString[15];
+ 508:	8a b1       	in	r24, 0x0a	; 10
+ 50a:	8f 7e       	andi	r24, 0xEF	; 239
+ 50c:	8a b9       	out	0x0a, r24	; 10
+	bitSet(PORTD, pinEcho);
+ 50e:	8b b1       	in	r24, 0x0b	; 11
+ 510:	80 61       	ori	r24, 0x10	; 16
+ 512:	8b b9       	out	0x0b, r24	; 11
+	char rangeStr[15];
 	
 	
     while (1) 
     {
 		range = ultraSonic();
- 510:	0e 94 c9 01 	call	0x392	; 0x392 <ultraSonic>
-		dtostrf(range, 10, 3, rangeString);
- 514:	8e 01       	movw	r16, r28
- 516:	0f 5f       	subi	r16, 0xFF	; 255
- 518:	1f 4f       	sbci	r17, 0xFF	; 255
- 51a:	23 e0       	ldi	r18, 0x03	; 3
- 51c:	30 e0       	ldi	r19, 0x00	; 0
- 51e:	4a e0       	ldi	r20, 0x0A	; 10
- 520:	50 e0       	ldi	r21, 0x00	; 0
+ 514:	0e 94 c9 01 	call	0x392	; 0x392 <ultraSonic>
+		dtostrf(range, 10, 3, rangeStr);
+ 518:	8e 01       	movw	r16, r28
+ 51a:	0f 5f       	subi	r16, 0xFF	; 255
+ 51c:	1f 4f       	sbci	r17, 0xFF	; 255
+ 51e:	23 e0       	ldi	r18, 0x03	; 3
+ 520:	4a e0       	ldi	r20, 0x0A	; 10
  522:	0e 94 a5 04 	call	0x94a	; 0x94a <dtostrf>
-		rangeString[10] = '\0';
+		rangeStr[10] = '\0';
  526:	1b 86       	std	Y+11, r1	; 0x0b
 		
-		transmitStringUSART(rangeString);
+		transmitStringUSART(rangeStr);
  528:	c8 01       	movw	r24, r16
  52a:	0e 94 30 01 	call	0x260	; 0x260 <transmitStringUSART>
 		transmitStringUSART("\r\n");
  52e:	80 e0       	ldi	r24, 0x00	; 0
  530:	91 e0       	ldi	r25, 0x01	; 1
  532:	0e 94 30 01 	call	0x260	; 0x260 <transmitStringUSART>
- 536:	ec cf       	rjmp	.-40     	; 0x510 <main+0x28>
+ 536:	ee cf       	rjmp	.-36     	; 0x514 <main+0x2e>
 
 00000538 <__subsf3>:
  538:	50 58       	subi	r21, 0x80	; 128
