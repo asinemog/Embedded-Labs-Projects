@@ -18,6 +18,10 @@ unsigned long numOV1;
 
 float ultraSonic(void);
 void delayUS(float);
+void transmitStringUSART(char* pdata, int len);
+void recieveCharUSART(void);
+
+
 
 ISR(TIMER0_OVF_vect){
 	numOV0--;
@@ -42,16 +46,45 @@ void usartINIT(int ubbr){
 }
 
 
+
+
+int main(void)
+{
+    bitSet(DDRB, pinTrigger);
+	bitSet(DDRB, pinTrigger);
+	
+	bitClear(DDRD, pinEcho);
+	bitSet(PORTD, pinEcho);
+	
+	float range;
+	char rangeString[15];
+	
+	
+    while (1) 
+    {
+		range = ultraSonic();
+		dtostrf(range, 10, 3, rangeString);
+		rangeString[10] = '\0';
+		
+		transmitStringUSART(rangeString);
+		transmitStringUSART("\r\n");
+		
+		
+    }
+}
+
 float ultraSonic(void){
-	// save previous values
+	// save previous values of registers we are using
 	char timsk1 = TIMSK2;
 	char tccr1b = TCCR1B;
 	char sreg = SREG;
 	
+	// reset registers
 	TCCR1B = 0;
 	TIMSK1 = 0;
 	SREG = 0;
 	
+	// enabled timer overflow interrupt
 	bitSet(TIMSK1, TOIE1);
 	sei();
 	
@@ -60,17 +93,22 @@ float ultraSonic(void){
 	TCNT1 = 0;
 	
 	bitClear(PORTB, pinTrigger);
+	
+	// to trigger pulses, set high for > 10us then set low
 	bitSet(PORTB, pinTrigger);
 	
-	delayUS(11);
+	//delayUS(11);
 	
 	bitClear(PORTB, pinTrigger);
 	
-	//while pinEcho is high, wait for it to go low
+	//wait for pinEcho to be high before counting
 	while(!bitCheck(PIND, pinEcho));
+	//when pinEcho goes high, start timer to measure how many ticks it is high
 	TCCR1B = 1;
 	
+	//wait while pinEcho is high
 	while(numOV1 && bitCheck(PIND, pinEcho));
+	//stop timer when pinEcho goes low
 	TCCR1B = 0;
 	
 	//store num current clock ticks within the cycle
@@ -93,11 +131,18 @@ float ultraSonic(void){
 	return(x);
 }
 
-int main(void)
-{
-    /* Replace with your application code */
-    while (1) 
-    {
-    }
+void transmitStringUSART(char* pdata, int len){
+	int lencomp = 0;
+	
+	// loop while current char isnt stop char and end of string hasnt been reached
+	while(*pdata != '\0' && lencomp != len){
+		// wait until UDRE0 (UDR empty flag) is set
+		while(!(UCSR0A & (1<<UDRE0)));
+		UDR0 = *pdata;
+		// go to next memory address in the string (next char)
+		pdata++;
+		//increment lencomp until len0 = len (string length of input)
+		lencomp++;
+		
+	}
 }
-
