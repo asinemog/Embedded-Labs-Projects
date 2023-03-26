@@ -6,34 +6,22 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
 
 #define F_CPU 16000000UL
-#define __DELAY_BACKWARD_COMPATIBLE__
-#include "util/delay.h"
 #include "bitFunctions.h"
 
-#define LEDPIN PINB5
+unsigned long numOV0;
 
-void blinkLed(int period){
+
+
+int main(void){
 	
-		bitSet(PORTB, LEDPIN);
-		_delay_ms(period);
-		bitClear(PORTB, LEDPIN);
-		_delay_ms(period);
 	
+	
+	while(1){
+		
+	}
 	
 }
-
-int main(void)
-{
-    //testing header file
-	bitSet(DDRB, LEDPIN);
-	
-	
-	
-    while (1) 
-    {
-		blinkLed(2000);
-    }
-}
-

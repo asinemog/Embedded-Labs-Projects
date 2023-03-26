@@ -30,7 +30,7 @@
 
 
 
-unsigned long numOV0;
+
 unsigned long numOV1;
 unsigned long numOV;
 
@@ -100,7 +100,7 @@ float ultraSonic(void){
 	bitSet(TIMSK1, TOIE1);
 	sei();
 	
-	char numOV1max = 255;
+	char numOV1max = 6;
 	numOV1 = numOV1max;
 	TCNT1 = 0;
 	
@@ -117,12 +117,13 @@ float ultraSonic(void){
 	//wait for pinEcho to be high before counting
 	while(!bitCheck(PIND, pinEcho));
 	//when pinEcho goes high, start timer to measure how many ticks it is high
-	TCCR1B = 1;
+	sei();
+	bitSet(TCCR1B, CS10);
 	
 	//wait while pinEcho is high
 	while(numOV1 && bitCheck(PIND, pinEcho));
 	//stop timer when pinEcho goes low
-	TCCR1B = 0;
+	bitClear(TCCR1B, CS10);
 	
 	//store num current clock ticks within the cycle
 	 unsigned int tcnt1 = TCNT1;
@@ -133,6 +134,10 @@ float ultraSonic(void){
 		x = 999;
 	}
 	else{
+		// speed = distance/time so distance = speed * time
+		// speed = speed of sound, time is time take by timer 1 to count how long echo pin was high
+		// time = number of ticks taken / no ticks per second (F_CPU/P) in seconds.
+		// no of ticks taken = no. overflows + current ticks
 		x = ((numOV1max-numOV1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100.0; // range in centimetres
 	}
 	
