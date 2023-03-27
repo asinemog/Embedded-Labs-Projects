@@ -4,7 +4,7 @@
 
 delayTimer0.c
 
-test.c
+main.c
 
 ultraSonic.c
 

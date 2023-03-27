@@ -38,7 +38,7 @@
 
 unsigned long numOv;
 unsigned long numOv1;
-
+unsigned long numCmp;
 
 void transmitStringUSART(char* pdata);
 void recieveCharUSART(void);
@@ -53,6 +53,10 @@ ISR(TIMER0_OVF_vect){
 
 ISR(TIMER1_OVF_vect){
 	numOv1--;
+}
+
+ISR(TIMER0_COMPA_vect){
+	numCmp--;
 }
 
 #define pinTrigger PORTB4
@@ -72,19 +76,25 @@ int main(void)
 	bitClear(DDRD, pinEcho);
 	bitSet(PORTD, pinEcho);
 	
-	float range;
-	char rangeStr[15];
+	DDRB = 0xFF;
+	
+	
+	//float range;
+	//char rangeStr[15];
 	
 	
     while (1) 
     {
-		range = ultraSonic(pinTrigger, pinEcho);
+		/*range = ultraSonic(pinTrigger, pinEcho);
 		dtostrf(range, 10, 3, rangeStr);
 		rangeStr[10] = '\0';
 		
 		transmitStringUSART(rangeStr);
-		transmitStringUSART("\r\n");
-		
+		transmitStringUSART("\r\n");*/
+		delayUS(20);
+		PORTB |= (1<<PINB5);
+		delayUS(20);
+		PORTB &= ~(1<<PINB5);
 		
     }
 }
