@@ -14,18 +14,19 @@
 #include "bitFunctions.h"
 #include "delayTimer0.h"
 #include "ultraSonic.h"
-//#include 
-
+#include "pwma4.h"
 
 #define pinTrigger PINB4
 #define pinEcho PIND4
 #define pinAlarmButton PIND1
 #define pinVolumeButton PIND2
+#define maxPwmTimeUS 1000000
 
 unsigned long numOv;
 unsigned long numOv1;
 unsigned long numCmp;
 
+void calcBuzzerSpeed(void);
 
 
 ISR(TIMER0_OVF_vect){
@@ -64,7 +65,9 @@ int main(void){
 	bitSet(PORTD, pinVolumeButton);
 	
 	//initialise timer2 PWM
-	//pwmINIT(duty);
+	//a4Init(duty);
+
+	//
 	
 	while(1){
 		
@@ -120,23 +123,38 @@ int main(void){
 					break;				
 			}
 			
-			range = ultraSonic(pinTrigger, pinEcho);
-			
-			if(range <= threshRange && range > 0){
-				buzzerSpeed = range/threshRange;
-			}
-			else if(range > threshRange && range < maxRange){
-				buzzerSpeed = 1.0;
-			}
-			
-			//
-			
-			
-			
-			
+			calcBuzzerSpeed();
+					
+			if(buzzerSpeed > 0 && buzzerSpeed <=1.0){
+				
+				a4Start(duty);
+				delayUS(maxPwmTimeUS*buzzerSpeed);
+				
+				calcBuzzerSpeed();
+				a4Stop();
+				
+				if(buzzerSpeed > 0 && buzzerSpeed <=1.0){
+					delayUS(maxPwmTimeUS*buzzerSpeed);	
+				}
+				
+			}	
+						
 		}
 	
 	}
 	
 }
 
+void calcBuzzerSpeed(void){
+	range = ultraSonic(pinTrigger, pinEcho);
+	
+	if(range <= threshRange && range > 0){
+		buzzerSpeed = range/threshRange;
+	}
+	else if(range > threshRange && range < maxRange){
+		buzzerSpeed = 1.0;
+	}
+	else{
+		buzzerSpeed = 0.0;
+	}
+}

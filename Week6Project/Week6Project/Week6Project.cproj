@@ -139,12 +139,12 @@
     <Compile Include="delayTimer0.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="main.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="test.c">
+    <None Include="main.c">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="test.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="ultraSonic.c">
       <SubType>compile</SubType>
     </Compile>

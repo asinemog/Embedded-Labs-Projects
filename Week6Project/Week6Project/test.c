@@ -91,9 +91,9 @@ int main(void)
 		
 		transmitStringUSART(rangeStr);
 		transmitStringUSART("\r\n");*/
-		delayUS(20);
+		delayUS(500);
 		PORTB |= (1<<PINB5);
-		delayUS(20);
+		delayUS(500);
 		PORTB &= ~(1<<PINB5);
 		
     }
