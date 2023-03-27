@@ -133,13 +133,22 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="delayTimer0.c">
+    <Compile Include="delayTimer0.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="delayTimer0.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="main.c">
       <SubType>compile</SubType>
     </None>
-    <None Include="delayTimer0.h">
+    <Compile Include="test.c">
       <SubType>compile</SubType>
-    </None>
-    <Compile Include="main.c">
+    </Compile>
+    <Compile Include="ultraSonic.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ultraSonic.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
