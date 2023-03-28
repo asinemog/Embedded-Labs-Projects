@@ -16,17 +16,17 @@
 #include "ultraSonic.h"
 #include "pwma4.h"
 
-#define pinTrigger PINB4
-#define pinEcho PIND4
-#define pinAlarmButton PIND1
-#define pinVolumeButton PIND2
+#define pinTrigger PIND4
+#define pinEcho PIND5
+#define pinAlarmButton PIND6
+#define pinVolumeButton PIND7
 #define maxPwmTimeUS 1000000
 
 unsigned long numOv;
 unsigned long numOv1;
 unsigned long numCmp;
 
-void calcBuzzerSpeed(void);
+float calcBuzzerSpeed(void);
 
 
 ISR(TIMER0_OVF_vect){
@@ -43,29 +43,33 @@ ISR(TIMER0_COMPA_vect){
 
 int main(void){
 	
-	//char alarmButtonStatusOld = 1;
+	char alarmButtonStatusOld = 1;
 	char alarmButtonStatus;
-	//char volButtonStatusOld = 1;
+	char volButtonStatusOld = 1;
 	char volButtonStatus;
 	
 	char alarmIsOn = 0;
 	
 	char volume = 0;
 	float duty = 0.3;
-	float range;
-	float maxRange = 300;
-	float threshRange = 150;
-	float buzzerSpeed;
+	float buzzerSpeed = 0.0;
 	// set buttons as inputs
 	bitClear(DDRD, pinAlarmButton);
 	bitClear(DDRD, pinVolumeButton);
+	
+	// set pinTrigger as output and pinEcho as input
+	bitSet(DDRD, pinTrigger);
+	bitClear(DDRD, pinEcho);
 	
 	//configure pullup resistors
 	bitSet(PORTD, pinAlarmButton);
 	bitSet(PORTD, pinVolumeButton);
 	
+	
+	
+	
 	//initialise timer2 PWM
-	//a4Init(duty);
+	a4Init(duty);
 
 	//
 	
@@ -73,13 +77,14 @@ int main(void){
 		
 		alarmButtonStatus = bitCheck(PIND, pinAlarmButton);
 		
-		if(alarmButtonStatus != 1){
+		if(alarmButtonStatus != alarmButtonStatusOld){
 			
 			delay50ms();
 			alarmButtonStatus = bitCheck(PIND, pinAlarmButton);
 			
-			if(alarmButtonStatus != 1){
+			if(alarmButtonStatus != alarmButtonStatusOld){
 				alarmIsOn = !alarmIsOn;
+				alarmButtonStatus = alarmButtonStatusOld;
 			}
 			
 		}
@@ -88,12 +93,12 @@ int main(void){
 			
 			volButtonStatus = bitCheck(PIND, pinVolumeButton);
 			
-			if(volButtonStatus != 1){
+			if(volButtonStatus != volButtonStatusOld){
 				
 				delay50ms();
 				volButtonStatus = bitCheck(PIND, pinVolumeButton);
 				
-				if(volButtonStatus != 1){
+				if(volButtonStatus != volButtonStatusOld){
 					// cycle through volume options with each button press
 					if(volume == 2){
 						volume = 0;
@@ -101,7 +106,7 @@ int main(void){
 					else{
 						volume++;
 					}
-					
+					volButtonStatusOld = volButtonStatus;
 				}
 								
 			}
@@ -109,13 +114,15 @@ int main(void){
 			switch(volume){
 				
 				case 0:
-					duty = 0.3;
+					//
+					duty = 0.4;
 					break;
 				case 1:
-					duty = 0.6;
+					//
+					duty = 0.7;
 					break;
 				case 2:
-					duty = 1.0;
+					duty = 0.9;
 					break;
 				default:
 					volume = 0;
@@ -123,14 +130,14 @@ int main(void){
 					break;				
 			}
 			
-			calcBuzzerSpeed();
+			buzzerSpeed = calcBuzzerSpeed();
 					
 			if(buzzerSpeed > 0 && buzzerSpeed <=1.0){
 				
 				a4Start(duty);
 				delayUS(maxPwmTimeUS*buzzerSpeed);
 				
-				calcBuzzerSpeed();
+				buzzerSpeed = calcBuzzerSpeed();
 				a4Stop();
 				
 				if(buzzerSpeed > 0 && buzzerSpeed <=1.0){
@@ -145,8 +152,11 @@ int main(void){
 	
 }
 
-void calcBuzzerSpeed(void){
-	range = ultraSonic(pinTrigger, pinEcho);
+float calcBuzzerSpeed(void){
+	float range = ultraSonic(pinTrigger, pinEcho);
+	float maxRange = 300;
+	float threshRange = 150;
+	float buzzerSpeed = 0.0;
 	
 	if(range <= threshRange && range > 0){
 		buzzerSpeed = range/threshRange;
@@ -157,4 +167,7 @@ void calcBuzzerSpeed(void){
 	else{
 		buzzerSpeed = 0.0;
 	}
+	
+	return(buzzerSpeed);
+	
 }

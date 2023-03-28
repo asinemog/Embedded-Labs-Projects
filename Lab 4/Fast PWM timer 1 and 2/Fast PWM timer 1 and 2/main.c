@@ -1,51 +1,150 @@
+/*
+ * Lab5Ultrasonic.c
+ *
+ * Created: 24/03/2023 1:11:03 PM
+ * Author : asine
+ */ 
+
+#define F_CPU 16000000UL
+
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
 
-#ifndef F_CPU
+
+
+
+//e.g. PIND = 0b00010100,
+// reg = PIND = 0b00010100
+// ind = PIND4 = 4
+// PIND >> PIND4 & 1 = 0b00010100 >> 4 & 1 = 0b00000001 & 0b00000001 = 1/true
+//
+
+
 #define F_CPU 16000000UL
-#endif
 
 
-#define PWMOUT1 PINB2
-#define PWMOUT2 PIND3
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
 
-int main(void){
+#include "bitFunctions.h"
+#include "delayTimer0.h"
+#include "ultraSonic.h"
+#include "pwma4.h"
+#include "util/delay.h"
+
+#define pinTrigger PINB4
+#define pinEcho PIND4
+#define pinAlarmButton PIND1
+#define pinVolumeButton PIND2
+#define maxPwmTimeUS 1000000
+
+unsigned long numOv;
+unsigned long numOv1;
+unsigned long numCmp;
+
+
+void transmitStringUSART(char* pdata);
+void recieveCharUSART(void);
+void transmitByteUSART(char c);
+void initUSART(int ubbr);
+
+
+
+ISR(TIMER0_OVF_vect){
+	numOv--;
+}
+
+ISR(TIMER1_OVF_vect){
+	numOv1--;
+}
+
+ISR(TIMER0_COMPA_vect){
+	numCmp--;
+}
+
+#define BAUD 9600
+#define MY_UBBR (F_CPU/16/BAUD - 1)
+
+
+
+int main(void)
+{
+    initUSART(MY_UBBR);
 	
-	cli();
+	bitSet(DDRB, pinTrigger);
 	
-	DDRB = 0xFF; //Set ports B and D as outputs
-	DDRD = 0xFF;
+	bitClear(DDRD, pinEcho);
+	bitSet(PORTD, pinEcho);
 	
+	DDRB = 0xFF;
 	
-	
-	
-	//enable fast pwm for timer 2
-	TCCR2A |= (1<<WGM20) | (1<<WGM21);
-	TCCR2B |= (1<<WGM22);
-	
-	TCCR2A |= (1<<COM2B1);
-	//prescaler to 32
-	TCCR2B |= (1<<CS20) | (1<<CS21);
-	
-	OCR2A = 135;
-	OCR2B = 81;
-	
-	//TIMER 1
-	//wgm
-	TCCR1A |= (1<<WGM10) | (1<<WGM11);
-	TCCR1B |= (1<<WGM12) | (1<<WGM13);
-	
-	TCCR1A |= (1<<COM1B1);
-	
-	TCCR1B|= (1<<CS10);
-	
-	OCR1A = 4323;
-	OCR1B = 2593;
+	float duty = 0.8;
+	float range;
+	float maxRange = 300;
+	float threshRange = 150;
+	float bSpeed = 1.0;
+	a4Init(duty);
+	//float range;
+	//char rangeStr[15];
 	
 	
-	
-	while(1){
+    while (1) 
+    {
+		/*range = ultraSonic(pinTrigger, pinEcho);
+		dtostrf(range, 10, 3, rangeStr);
+		rangeStr[10] = '\0';
 		
-	}
+		transmitStringUSART(rangeStr);
+		transmitStringUSART("\r\n");*/
+		//delayUS(500);
+		//PORTB |= (1<<PINB5);
+		//delayUS(500);
+		//PORTB &= ~(1<<PINB5);
+		
+		for(int i = 100; i > 0; i--){
+			bSpeed = 1.0/i;
+			a4Start(duty);
+			delayUS(1000000*bSpeed);
+			a4Stop();
+			delayUS(1000000*bSpeed);
+			
+		}
+		
+		
+		
+		
+    }
+}
+
+
+
+void initUSART(int ubbr){
+	UBRR0 = ubbr;
+	
+	UCSR0B |= (1<<TXEN0) ;
+	
+	UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
+	
 	
 }
+
+void transmitStringUSART(char* x){
+	
+	
+	// loop while current char isnt stop char and end of string hasnt been reached
+	while(*x != '\0'){
+		transmitByteUSART(*x);
+		x++;
+	
+	}
+}
+
+void transmitByteUSART(char x){
+	while(!bitCheck(UCSR0A, UDRE0));
+	UDR0 = x;
+	
+}
+

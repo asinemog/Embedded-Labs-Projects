@@ -26,15 +26,15 @@ float ultraSonic(int pinTrigger, int pinEcho){
 	numOv1 = numOv1max;
 	TCNT1 = 0;
 	
-	bitClear(PORTB, pinTrigger);
+	bitClear(PORTD, pinTrigger);
 	
 	// to trigger pulses, set high for > 10us then set low
-	bitSet(PORTB, pinTrigger);
+	bitSet(PORTD, pinTrigger);
 	
 	delayUS(11);
 	//_delay_us(11);
 	
-	bitClear(PORTB, pinTrigger);
+	bitClear(PORTD, pinTrigger);
 	
 	//wait for pinEcho to be high before counting
 	while(!bitCheck(PIND, pinEcho));

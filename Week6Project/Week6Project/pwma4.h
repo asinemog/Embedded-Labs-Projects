@@ -11,6 +11,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "bitFunctions.h"
 
 #define F_CPU 16000000UL
 
@@ -18,7 +19,7 @@ void a4Init(float duty);
 
 void a4Start(float duty);
 
-void a4stop(void);
+void a4Stop(void);
 
 
 

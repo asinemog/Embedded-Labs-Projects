@@ -51,8 +51,8 @@ ISR(TIMER1_OVF_vect){
 	numOV1--;
 }
 
-#define pinTrigger PORTB4
-#define pinEcho PORTD4
+#define pinTrigger PORTD4
+#define pinEcho PORTD5
 
 #define BAUD 9600
 #define MY_UBBR (F_CPU/16/BAUD - 1)
@@ -63,7 +63,7 @@ int main(void)
 {
     initUSART(MY_UBBR);
 	
-	bitSet(DDRB, pinTrigger);
+	bitSet(DDRD, pinTrigger);
 	
 	bitClear(DDRD, pinEcho);
 	bitSet(PORTD, pinEcho);
@@ -104,15 +104,15 @@ float ultraSonic(void){
 	numOV1 = numOV1max;
 	TCNT1 = 0;
 	
-	bitClear(PORTB, pinTrigger);
+	bitClear(PORTD, pinTrigger);
 	
 	// to trigger pulses, set high for > 10us then set low
-	bitSet(PORTB, pinTrigger);
+	bitSet(PORTD, pinTrigger);
 	
 	delayUS(11);
 	//_delay_us(11);
 	
-	bitClear(PORTB, pinTrigger);
+	bitClear(PORTD, pinTrigger);
 	
 	//wait for pinEcho to be high before counting
 	while(!bitCheck(PIND, pinEcho));
