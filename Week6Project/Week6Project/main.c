@@ -78,38 +78,45 @@ int main(void){
 		alarmButtonStatus = bitCheck(PIND, pinAlarmButton);
 		
 		if(alarmButtonStatus != alarmButtonStatusOld){
+			delayUS(20e3);
 			
-			delay50ms();
 			alarmButtonStatus = bitCheck(PIND, pinAlarmButton);
 			
 			if(alarmButtonStatus != alarmButtonStatusOld){
-				alarmIsOn = !alarmIsOn;
-				alarmButtonStatus = alarmButtonStatusOld;
+				
+				alarmButtonStatusOld = alarmButtonStatus;
+				
+				if(!alarmButtonStatus){
+					alarmIsOn = !alarmIsOn;
+					
+				}
+				
 			}
-			
 		}
 		
-		if(alarmIsOn){
+		volButtonStatus = bitCheck(PIND, pinVolumeButton);
+		
+		if(volButtonStatus != volButtonStatusOld){
+			delayUS(20e3);
 			
 			volButtonStatus = bitCheck(PIND, pinVolumeButton);
 			
 			if(volButtonStatus != volButtonStatusOld){
 				
-				delay50ms();
-				volButtonStatus = bitCheck(PIND, pinVolumeButton);
+				volButtonStatusOld = volButtonStatus;
 				
-				if(volButtonStatus != volButtonStatusOld){
-					// cycle through volume options with each button press
+				if(!volButtonStatus){
 					if(volume == 2){
 						volume = 0;
 					}
 					else{
 						volume++;
 					}
-					volButtonStatusOld = volButtonStatus;
+					
 				}
-								
+				
 			}
+		}
 			
 			switch(volume){
 				
@@ -150,7 +157,7 @@ int main(void){
 	
 	}
 	
-}
+
 
 float calcBuzzerSpeed(void){
 	float range = ultraSonic(pinTrigger, pinEcho);
