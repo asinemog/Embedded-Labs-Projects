@@ -51,8 +51,8 @@ int main(void){
 	char alarmIsOn = 0;
 	
 	char volume = 0;
-	float duty = 0.3;
-	float buzzerSpeed = 0.0;
+	float duty = 0.5;
+	float buzzerSpeed = 0.5;
 	// set buttons as inputs
 	bitClear(DDRD, pinAlarmButton);
 	bitClear(DDRD, pinVolumeButton);
@@ -65,7 +65,7 @@ int main(void){
 	bitSet(PORTD, pinAlarmButton);
 	bitSet(PORTD, pinVolumeButton);
 	
-	
+	DDRB = 0x00;
 	
 	
 	//initialise timer2 PWM
@@ -89,6 +89,7 @@ int main(void){
 				if(!alarmButtonStatus){
 					alarmIsOn = !alarmIsOn;
 					
+					
 				}
 				
 			}
@@ -99,18 +100,16 @@ int main(void){
 		if(volButtonStatus != volButtonStatusOld){
 			delayUS(20e3);
 			
-			volButtonStatus = bitCheck(PIND, pinVolumeButton);
+			alarmButtonStatus = bitCheck(PIND, pinAlarmButton);
 			
-			if(volButtonStatus != volButtonStatusOld){
+			if(alarmButtonStatus != alarmButtonStatusOld){
 				
-				volButtonStatusOld = volButtonStatus;
+				alarmButtonStatusOld = alarmButtonStatus;
 				
-				if(!volButtonStatus){
-					if(volume == 2){
-						volume = 0;
-					}
-					else{
-						volume++;
+				if(!alarmButtonStatus){
+					alarmIsOn = !alarmIsOn;
+					if(bitCheck(PORTB, PINB5)){
+						
 					}
 					
 				}
@@ -122,19 +121,25 @@ int main(void){
 				
 				case 0:
 					//
-					duty = 0.4;
+					duty = 0.2;
 					break;
 				case 1:
 					//
-					duty = 0.7;
+					duty = 0.4;
 					break;
 				case 2:
-					duty = 0.9;
+					duty = 0.8;
 					break;
 				default:
 					volume = 0;
-					duty = 0.3;
+					duty = 0.2;
 					break;				
+			}
+			
+			if(duty == 0.8){
+				PORTB |= (1<<PINB5);
+			}else{
+				PORTB &= ~(1<<PINB5);
 			}
 			
 			buzzerSpeed = calcBuzzerSpeed();
@@ -144,9 +149,9 @@ int main(void){
 				a4Start(duty);
 				delayUS(maxPwmTimeUS*buzzerSpeed);
 				
-				buzzerSpeed = calcBuzzerSpeed();
-				a4Stop();
 				
+				a4Stop();
+				buzzerSpeed = calcBuzzerSpeed();
 				if(buzzerSpeed > 0 && buzzerSpeed <=1.0){
 					delayUS(maxPwmTimeUS*buzzerSpeed);	
 				}

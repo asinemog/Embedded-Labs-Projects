@@ -9,6 +9,7 @@
 #include "ultraSonic.h"
 #include "delayTimer0.h"
 #include "util/delay.h"
+#include "pwma4.h"
 
 #define bitSet(reg, ind) (reg |= 1 << ind)
 
@@ -80,6 +81,8 @@ int main(void){
 	char volButtonStatusOld = 1;
 	char volButtonStatus;
 	char volume = 0;
+	float duty = 0.8;
+	a4Init(duty);
 	
 
 	
@@ -100,6 +103,9 @@ int main(void){
 				  
 				  if(!alarmButtonStatus){
 					  alarmIsOn = !alarmIsOn;
+					  if(bitCheck(PORTB, PINB5)){
+						  
+					  }
 					  
 				  }
 				  
@@ -130,10 +136,14 @@ int main(void){
 			   }
 		   }
 		  
+		  if(volume == 0){
+			  PORTB |= (1<<PINB5);
+		  }
+		  
 		  
 		  if(alarmIsOn){
 			  
-			  //a4Start(duty);
+			  a4Start(0.8);
 			  
 			  range = ultraSonic(pinTrigger, pinEcho);
 			  dtostrf(range, 10, 3, rangeStr);
@@ -142,7 +152,7 @@ int main(void){
 			  transmitStringUSART(rangeStr);
 			  transmitStringUSART("\r\n");
 		  }else{
-			  //a4Stop();
+			  a4Stop();
 		  }
 		  
 		  
@@ -174,5 +184,25 @@ void transmitStringUSART(char* x){
 void transmitByteUSART(char x){
 	while(!bitCheck(UCSR0A, UDRE0));
 	UDR0 = x;
+	
+}
+
+float calcBuzzerSpeed(void){
+	float range = ultraSonic(pinTrigger, pinEcho);
+	float maxRange = 300;
+	float threshRange = 150;
+	float buzzerSpeed = 0.0;
+	
+	if(range <= threshRange && range > 0){
+		buzzerSpeed = range/threshRange;
+	}
+	else if(range > threshRange && range < maxRange){
+		buzzerSpeed = 1.0;
+	}
+	else{
+		buzzerSpeed = 0.0;
+	}
+	
+	return(buzzerSpeed);
 	
 }

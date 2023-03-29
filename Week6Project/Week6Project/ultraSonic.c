@@ -52,16 +52,16 @@ float ultraSonic(int pinTrigger, int pinEcho){
 	
 	float x; //range
 	
-	if (numOv1 == 0){
-		x = 999;
-	}
-	else{
+	//if (numOv1 == 0){
+	//	x = 999;
+//	}
+//	else{
 		// speed = distance/time so distance = speed * time
 		// speed = speed of sound, time is time take by timer 1 to count how long echo pin was high
 		// time = number of ticks taken / no ticks per second (F_CPU/P) in seconds.
 		// no of ticks taken = no. overflows + current ticks
 		x = ((numOv1max-numOv1)*65536.0 + tcnt1) / 16.0e6 * 343.0/2.0 * 100.0; // range in centimetres
-	}
+//	}
 	
 	//return registers back to whatever they were
 	TIMSK1 = timsk1;
