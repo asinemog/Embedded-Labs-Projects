@@ -15,10 +15,10 @@
 #include "util/delay.h"
 
 
-#define pinTrigger PIND4
-#define pinEcho PIND5
-#define pinAlarmButton PIND6
-#define pinVolumeButton PIND7
+#define pinTrigger PIND6
+#define pinEcho PIND7
+#define pinAlarmButton PIND4
+#define pinVolumeButton PIND5
 #define maxPwmTimeUS 1000000
 
 unsigned long numOv;
@@ -56,6 +56,7 @@ void delayUS(float t){
 	
 	//calc remaining fraction of overflows
 	float tmp = t*16.0/256.0 - numOv;
+	
 	unsigned long remain = (1 - tmp)*256;
 	bitSet(TIMSK0, TOIE0);
 	TCCR0A = 0;
@@ -71,6 +72,7 @@ void delayUS(float t){
 	}
 	
 	if(tmp > 0.0){
+		//set count to remain to make the rest of the fractional time up
 		TCNT0 = remain;
 		numOv = 1;
 		sei();
@@ -187,7 +189,9 @@ float ultraSonic(void){
 int volumeButton(int volume){
 	
 	int volumeButtonStatus = bitCheck(PIND, pinVolumeButton);
-	delayUS(50e3);
+	
+	
+	delayUS(20e3);
 	
 	// check if still pressed
 	if(!volumeButtonStatus){
@@ -215,7 +219,7 @@ int volumeButton(int volume){
 			volumeButtonStatus = bitCheck(PIND, pinVolumeButton);
 			
 		}
-		delayUS(50e3);
+		delayUS(20e3);
 	}
 	
 	return(volume);
@@ -318,7 +322,7 @@ int main(void){
 				}else{
 				duty = 0.2;
 			}
-			
+			// set duty cycle
 			OCR2B = duty*142 - 1;
 			
 			//calc buzzerON
@@ -329,7 +333,7 @@ int main(void){
 			bitSet(TCCR2B, CS22);
 			bitSet(DDRD, PIND3);
 			
-			//delay based on scalar
+			//delay based on scalar, poll alarm button
 			i = 0;
 			while(i < scaledDelay && alarmIsOn){
 				
@@ -346,7 +350,7 @@ int main(void){
 			bitClear(TCCR2B, CS22);
 			bitClear(DDRD, PIND3);
 			
-			//delay based on scalar
+			//delay based on scalar, poll alarm button 
 				i = 0;
 				while(i < scaledDelay && alarmIsOn){
 					
