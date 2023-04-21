@@ -14,9 +14,7 @@
 #include "bitFunctions.h"
 
 #define DDR_SPI DDRB
-
-
-
+#define pinMISO PINB4
 
 void transmitStringUSART(char* pdata);
 void recieveCharUSART(void);
@@ -24,7 +22,14 @@ void transmitByteUSART(char c);
 void initUSART(int ubbr);
 void initSPIslave(void);
 
+volatile unsigned char spi_data_rx = 0;
 
+
+ISR(SPI_STC_vect){
+	
+	spi_data_rx = SPDR;
+	
+}
 
 int main(void)
 {
@@ -59,4 +64,15 @@ void transmitByteUSART(char x){
 	while(!bitCheck(UCSR0A, UDRE0));
 	UDR0 = x;
 	
+}
+
+void initSPIslave(void){
+	// set MISO as output
+	bitSet(DDR_SPI, pinMISO);
+	
+	// set this board as slave and enable SPI
+	bitSet(SPCR, SPE);
+	bitSet(SPCR, SPIE);
+	bitClear(SPCR, MSTR);
+	sei();
 }
