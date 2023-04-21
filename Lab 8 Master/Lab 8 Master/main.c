@@ -13,10 +13,13 @@
 #include "util/delay.h"
 #include "bitFunctions.h"
 
+#define BAUD 9600
+#define MY_UBBR (F_CPU/16/BAUD - 1)
+
 #define DDR_SPI DDRB
 #define pinSCK PINB5
-#define pinMOSI PINB4
-#define pinMISO PINB3
+#define pinMISO PINB4
+#define pinMOSI PINB3
 #define pinSS PINB2
 
 
@@ -28,14 +31,46 @@ void initADC(void);
 void initSPImaster(void);
 
 
+uint16_t tempReading = 0;
+
+
+
 
 int main(void)
 {
+    initUSART(MY_UBBR);
+    initADC();
     
-	
-    while (1) 
+	while (1) 
     {
-    }
+		while(!(ADCSRA & (1<<ADIF)));
+		
+		bitSet(ADCSRA, ADIF);
+		
+		{
+		tempReading = ADC;
+		
+		double tempK = log(10000.0 * ((1023.0 / (float)tempReading - 1.0)));
+		tempK = 1.0 / (0.001129148 + (0.000234125 + (0.0000000876741 * tempK * tempK )) * tempK ); // Kelvin
+		float tempC = (tempK - 273.15); //
+		float tempF = (tempC * 9.0)/ 5.0 + 32.0;
+
+		
+		char tempC0[15];
+		dtostrf(tempC, 10, 3, tempC0);
+		
+		tempC0[10] = "\0";
+		transmitStringUSART(tempC0);
+		transmitStringUSART("\r\n");
+		
+		}
+	}
+		
+		
+			
+		
+		
+		
 }
 
 
@@ -91,6 +126,20 @@ void initADC(void){
 	bitSet(ADCSRA, ADPS1);
 	bitSet(ADCSRA, ADPS2);
 	
+	
+	// set to free running mode
+	bitSet(ADCSRA, ADATE);
+	bitClear(ADCSRB, ADTS0);
+	bitClear(ADCSRB, ADTS1);
+	bitClear(ADCSRB, ADTS2);
+	
+	// ADC interrupt enable
+	//bitSet(ADCSRA, ADIE);
+	//sei();
+	
 	// enable ADC
 	bitSet(ADCSRA, ADEN);
+	bitSet(ADCSRA, ADSC);
+	
+	
 }
