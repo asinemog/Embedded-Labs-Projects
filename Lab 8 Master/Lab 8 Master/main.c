@@ -26,7 +26,6 @@
 void transmitStringUSART(char* x);
 void recieveCharUSART(void);
 void transmitByteUSART(char x);
-void transmitByteSPI(char c);
 void initUSART(int ubbr);
 void initADC(void);
 void initSPImaster(void);
@@ -42,6 +41,7 @@ int main(void)
 {
     initUSART(MY_UBBR);
     initADC();
+	initSPImaster();
     
 	while (1) 
     {
@@ -66,9 +66,20 @@ int main(void)
 		transmitStringUSART("\r\n");
 		
 		// times float by 10 to preserve 1 decimal place when casting to char, slave side will divide by 10
-		spi_tx_data = (char) ((tempC - 15.0) *10.0);
+		char temp = (char) ((tempC - 15.0) *10.0);
+		spi_tx_data = temp;
+	
 		
-		transmitByteSPI(spi_tx_data);
+		bitClear(PORTB, pinSS);
+		SPDR = spi_tx_data;
+		// poll transmission complete flag SPIF
+		while(!(SPSR & (1<<SPIF)));
+		
+		// read bus data to set SPIF low
+		spi_rx_data = SPDR;
+		
+		// signal transmission end
+		bitSet(PORTB, pinSS);
 		
 		}
 	}
@@ -87,10 +98,15 @@ void initSPImaster(void){
 	bitSet(DDR_SPI, pinSCK);
 	bitSet(DDR_SPI, pinMOSI);
 	
+	// drive SS pin high
+	bitSet(PORTB, pinSS);
+	
 	// enable SPI and set this board as master
 	bitSet(SPCR, SPE);
 	bitSet(SPCR, MSTR);
 	
+	//bitSet(SPCR, SPIE);
+	//sei();
 	// set up MISO pin as input
 	//bitClear(DDR_SPI, pinMISO);
 	
@@ -125,22 +141,7 @@ void transmitByteUSART(char x){
 	
 }
 
-void transmitByteSPI(char c){
-	
-	
-	// set ss pin low to start transmission
-	bitClear(PORTB, pinSS);
-	SPDR = c;
-	// poll transmission complete flag SPIF 
-	while(!bitCheck(SPDR, SPIF));
-	
-	// read bus data to set SPIF low
-	spi_rx_data = SPDR;
-	
-	// signal transmission end
-	bitSet(PORTB, pinSS);
-	
-}
+
 
 
 
