@@ -56,12 +56,17 @@ int main(void)
 		float tempF = (tempC * 9.0)/ 5.0 + 32.0;
 
 		
+		
 		char tempC0[15];
 		dtostrf(tempC, 10, 3, tempC0);
 		
 		tempC0[10] = "\0";
 		transmitStringUSART(tempC0);
 		transmitStringUSART("\r\n");
+		
+		PORTB &= ~(1 << pinSS);
+		
+		
 		
 		}
 	}
@@ -79,6 +84,11 @@ void initSPImaster(void){
 	bitSet(DDR_SPI, pinSS);
 	bitSet(DDR_SPI, pinSCK);
 	bitSet(DDR_SPI, pinMOSI);
+	
+	// set prescaler to 4
+	bitClear(SPCR, SPR0);
+	bitClear(SPCR, SPR1);
+	bitClear(SPSR, SPI2X);
 	
 	// enable SPI and set this board as master
 	bitSet(SPCR, SPE);
