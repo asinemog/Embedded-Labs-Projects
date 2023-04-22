@@ -23,16 +23,17 @@
 #define pinSS PINB2
 
 
-void transmitStringUSART(char* pdata);
+void transmitStringUSART(char* x);
 void recieveCharUSART(void);
-void transmitByteUSART(char c);
+void transmitByteUSART(char x);
 void initUSART(int ubbr);
 void initADC(void);
 void initSPImaster(void);
 
 
 uint16_t tempReading = 0;
-
+volatile unsigned char spi_tx_data = 0;
+volatile unsigned char spi_rx_data = 0;
 
 
 
@@ -40,6 +41,7 @@ int main(void)
 {
     initUSART(MY_UBBR);
     initADC();
+	initSPImaster();
     
 	while (1) 
     {
@@ -56,7 +58,6 @@ int main(void)
 		float tempF = (tempC * 9.0)/ 5.0 + 32.0;
 
 		
-		
 		char tempC0[15];
 		dtostrf(tempC, 10, 3, tempC0);
 		
@@ -64,9 +65,21 @@ int main(void)
 		transmitStringUSART(tempC0);
 		transmitStringUSART("\r\n");
 		
-		PORTB &= ~(1 << pinSS);
+		// times float by 10 to preserve 1 decimal place when casting to char, slave side will divide by 10
+		char temp = (char) ((tempC - 15.0) *10.0);
+		spi_tx_data = temp;
+	
 		
+		bitClear(PORTB, pinSS);
+		SPDR = spi_tx_data;
+		// poll transmission complete flag SPIF
+		while(!(SPSR & (1<<SPIF)));
 		
+		// read bus data to set SPIF low
+		spi_rx_data = SPDR;
+		
+		// signal transmission end
+		bitSet(PORTB, pinSS);
 		
 		}
 	}
@@ -85,22 +98,23 @@ void initSPImaster(void){
 	bitSet(DDR_SPI, pinSCK);
 	bitSet(DDR_SPI, pinMOSI);
 	
-	// set prescaler to 4
-	bitClear(SPCR, SPR0);
-	bitClear(SPCR, SPR1);
-	bitClear(SPSR, SPI2X);
+	// drive SS pin high
+	bitSet(PORTB, pinSS);
 	
 	// enable SPI and set this board as master
 	bitSet(SPCR, SPE);
 	bitSet(SPCR, MSTR);
 	
+	//bitSet(SPCR, SPIE);
+	//sei();
 	// set up MISO pin as input
-	bitClear(DDR_SPI, pinMISO);
+	//bitClear(DDR_SPI, pinMISO);
 	
 	
 }
 
 void initUSART(int ubbr){
+	
 	UBRR0 = ubbr;
 	
 	UCSR0B |= (1<<TXEN0) ;
@@ -126,6 +140,10 @@ void transmitByteUSART(char x){
 	UDR0 = x;
 	
 }
+
+
+
+
 
 void initADC(void){
 	// Vref = AREF
