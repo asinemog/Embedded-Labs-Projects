@@ -16,14 +16,19 @@
 #define DDR_SPI DDRB
 #define pinMISO PINB4
 
+#define BAUD 9600
+#define MY_UBBR (F_CPU/16/BAUD - 1)
+
 void transmitStringUSART(char* pdata);
 void recieveCharUSART(void);
 void transmitByteUSART(char c);
 void initUSART(int ubbr);
 void initSPIslave(void);
 
-volatile unsigned char spi_data_rx = 0;
 
+
+volatile unsigned char spi_data_rx = 0;
+volatile unsigned char spi_data_tx = 0;
 
 ISR(SPI_STC_vect){
 	
@@ -34,14 +39,19 @@ ISR(SPI_STC_vect){
 int main(void)
 {
     float tempC = 0;
+	initSPIslave();
+	initUSART(MY_UBBR);
     while (1) 
     {
+		
+		// convert back to float with 1 decimal place
 		tempC = (float) spi_data_rx / 10.0 + 15.0;
 		char tempC0[15];
-		dtostrf(tempC, 10, 3, tempC);
-		tempc0[10] = "\0";
+		dtostrf(tempC, 10, 3, tempC0);
+		tempC0[10] = "\0";
 		transmitStringUSART(tempC0);
 		transmitStringUSART("\r\n");
+		
 		 
     }
 }
