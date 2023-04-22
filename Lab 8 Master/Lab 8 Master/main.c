@@ -23,16 +23,18 @@
 #define pinSS PINB2
 
 
-void transmitStringUSART(char* pdata);
+void transmitStringUSART(char* x);
 void recieveCharUSART(void);
-void transmitByteUSART(char c);
+void transmitByteUSART(char x);
+void transmitByteSPI(char c);
 void initUSART(int ubbr);
 void initADC(void);
 void initSPImaster(void);
 
 
 uint16_t tempReading = 0;
-
+volatile unsigned char spi_tx_data = 0;
+volatile unsigned char spi_rx_data = 0;
 
 
 
@@ -63,6 +65,11 @@ int main(void)
 		transmitStringUSART(tempC0);
 		transmitStringUSART("\r\n");
 		
+		// times float by 10 to preserve 1 decimal place when casting to char, slave side will divide by 10
+		spi_tx_data = (char) ((tempC - 15.0) *10.0);
+		
+		transmitByteSPI(spi_tx_data);
+		
 		}
 	}
 		
@@ -85,12 +92,13 @@ void initSPImaster(void){
 	bitSet(SPCR, MSTR);
 	
 	// set up MISO pin as input
-	bitClear(DDR_SPI, pinMISO);
+	//bitClear(DDR_SPI, pinMISO);
 	
 	
 }
 
 void initUSART(int ubbr){
+	
 	UBRR0 = ubbr;
 	
 	UCSR0B |= (1<<TXEN0) ;
@@ -116,6 +124,25 @@ void transmitByteUSART(char x){
 	UDR0 = x;
 	
 }
+
+void transmitByteSPI(char c){
+	
+	
+	// set ss pin low to start transmission
+	bitClear(PORTB, pinSS);
+	SPDR = c;
+	// poll transmission complete flag SPIF 
+	while(!bitCheck(SPDR, SPIF));
+	
+	// read bus data to set SPIF low
+	spi_rx_data = SPDR;
+	
+	// signal transmission end
+	bitSet(PORTB, pinSS);
+	
+}
+
+
 
 void initADC(void){
 	// Vref = AREF

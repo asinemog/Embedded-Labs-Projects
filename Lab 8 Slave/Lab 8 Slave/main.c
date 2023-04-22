@@ -33,9 +33,16 @@ ISR(SPI_STC_vect){
 
 int main(void)
 {
-    /* Replace with your application code */
+    float tempC = 0;
     while (1) 
     {
+		tempC = (float) spi_data_rx / 10.0 + 15.0;
+		char tempC0[15];
+		dtostrf(tempC, 10, 3, tempC);
+		tempc0[10] = "\0";
+		transmitStringUSART(tempC0);
+		transmitStringUSART("\r\n");
+		 
     }
 }
 
