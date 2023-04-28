@@ -60,14 +60,23 @@ int main(void)
 		
 		char tempC0[15];
 		dtostrf(tempC, 10, 3, tempC0);
-		
+	
 		tempC0[10] = "\0";
 		transmitStringUSART(tempC0);
 		transmitStringUSART("\r\n");
 		
-		// times float by 10 to preserve 1 decimal place when casting to char, slave side will divide by 10
-		char temp = (char) ((tempC - 15.0) *10.0);
-		spi_tx_data = temp;
+		char tempADC[15];
+		itoa(tempReading, tempADC, 10);
+		tempADC[10] = "\0";
+		//transmitStringUSART(tempADC);
+		//transmitStringUSART("\r\n");
+		
+		// send modified version of ADC reading to fit in char to SPI, slave will decode later
+		char temp = (char) tempReading - 200;
+		if(temp >=0 && temp < 256){
+			spi_tx_data = temp;
+		}
+	
 	
 		
 		bitClear(PORTB, pinSS);
