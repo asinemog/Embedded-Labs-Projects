@@ -66,11 +66,17 @@ int main(void)
     while (1) 
     {
 		if(readFlag){
-			
+			// convert ADC value into celcius
 			tempC = processADC();
 			
 			
 		}
+
+		// for motor to work, needs minimum 40% duty cycle.
+		// using the ADC reading, reduce to a range between 0 and 200
+		// then calculate duty cycle by mapping the new value between
+		// 0 and 0.6, then adding 0.4. This ensures the minimum duty 
+		// cycle is 0.4 and max is 1.0, scaling linearly with temperature.
 		if(tempReading < 400){
 			tempr1 = 0;
 		}else if(tempReading > 600){
