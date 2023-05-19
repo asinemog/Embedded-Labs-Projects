@@ -21,6 +21,7 @@
 #define pinMISO PINB4
 #define pinMOSI PINB3
 #define pinSS PINB2
+#define pinBtn PIND2
 
 float myMap(float x, float x1, float x2, float y1, float y2);
 void transmitStringUSART(char* x);
@@ -34,7 +35,7 @@ void initTimer0(void);
 
 
 volatile uint16_t tempReading;
-
+volatile uint8_t brakeFlag = 0;
 volatile uint8_t readFlag = 0;
 
 
@@ -43,52 +44,81 @@ ISR(ADC_vect){
 	// read adc and set flag for reading
 	tempReading = ADC;
 	readFlag = 1;
+}
+
+ISR(INT0_vect){
+	//_delay_ms(50);
+	if(!bitCheck(PIND, pinBtn)){
+		
+		if(brakeFlag){
+			brakeFlag = 0;
+		}else{
+			brakeFlag = 1;
+		}
+		
+	}
 	
 	
 }
-
 
 int main(void)
 {
     
 	float tempC = 0.0;
-	float duty = 0.8;
+	float duty = 0.5;
 	uint16_t testReading = 600;
 	uint8_t tempr1 = 0;
 	
  	initADC();
  	initUSART(MY_UBBR);
 	initTimer0();
+	
+	// set button pin as input 
+	bitClear(DDRD, pinBtn);
+	bitSet(PORTD, pinBtn);
+	
+	// enable INT0 as hardware interrupt
+	bitSet(EIMSK, INT0);
+	bitClear(EIMSK, INT1);
+	bitSet(EICRA, ISC01);
+	
 	sei();
 
-	OCR2B = 156*duty;
+	OCR0B = 156*duty;
 	
     while (1) 
     {
-		if(readFlag){
-			// convert ADC value into celcius
-			tempC = processADC();
+		
+		while(brakeFlag == 1){
+			DDRB = 0xFF;
+			sei();
+			bitSet(TCCR1B, CS11);
+			if(readFlag){
+				// convert ADC value into celcius
+				tempC = processADC();
 			
+			}
+			sei();
+			// for motor to work, needs minimum 40% duty cycle.
+			// using the ADC reading, reduce to a range between 0 and 200
+			// then calculate duty cycle by mapping the new value between
+			// 0 and 0.6, then adding 0.4. This ensures the minimum duty 
+			// cycle is 0.4 and max is 1.0, scaling linearly with temperature.
+			if(tempReading < 400){
+				tempr1 = 0;
+			}else if(tempReading > 600){
+				tempr1 = 200;
+			}else{
+				tempr1 = tempReading - 400;
+			}
+		
+			duty = myMap(tempr1, 0, 200, 0, 1) ;
+			uint16_t ocr2b = duty * 19999;
+			OCR1B = ocr2b;
 			
 		}
-
-		// for motor to work, needs minimum 40% duty cycle.
-		// using the ADC reading, reduce to a range between 0 and 200
-		// then calculate duty cycle by mapping the new value between
-		// 0 and 0.6, then adding 0.4. This ensures the minimum duty 
-		// cycle is 0.4 and max is 1.0, scaling linearly with temperature.
-		if(tempReading < 400){
-			tempr1 = 0;
-		}else if(tempReading > 600){
-			tempr1 = 200;
-		}else{
-			tempr1 = tempReading - 400;
-		}
-		
-		duty = myMap(tempr1, 0, 200, 0, 1);
-		uint8_t ocr2b = duty * 156;
-		OCR2B = ocr2b;
-		
+		bitClear(TCCR1B, CS11);
+		DDRB = 0x00;
     }
 }
 
@@ -187,27 +217,28 @@ float processADC(void){
 
 void initTimer0(void){
 	
-	DDRD = 0xFF;
-	
-	//set fast PWM mode
-	bitSet(TCCR2A, WGM20);
-	bitSet(TCCR2A, WGM21);
-	bitSet(TCCR2B, WGM22);
-	
-	// set clear OC2B on compare match, set at BOT
-	bitSet(TCCR2A, COM2B1);
-	
-	// TOP = FCPU/(FPWM*P) - 1
-	// TOP = 16mHz/(100*P) - 1
-	// only valid P is 1024 for max = 255 (timer 2)
-	// where TOP = 16e6/(100*1024) - 1 = 155.25 
-	OCR2A = 156;
-	
-	//OCR2B = 78;
-	// start counting with prescaler = 1024
-	bitSet(TCCR2B, CS20);
-	bitSet(TCCR2B, CS21);
-	bitSet(TCCR2B, CS22);
+		DDRB = 0xFF;
+		
+		// 	set fast PWM mode
+
+		bitSet(TCCR1A, WGM10);
+		bitSet(TCCR1A, WGM11);
+		bitSet(TCCR1B, WGM12);
+		bitSet(TCCR1B, WGM13);
+		
+		
+		// clear on compare match, set on bot
+		bitSet(TCCR1A, COM1B1);
+		
+		// TOP = FCPU/(FPWM*P) - 1
+		// TOP = 16mHz/(100*P) - 1
+		// P = 8 gives TOP = 19999 < MAX (65535)
+		OCR1A = 19999;
+		
+		// default duty 60%
+		OCR1B = 17000;
+		
+		bitSet(TCCR1B, CS11);
 	
 	
 	
